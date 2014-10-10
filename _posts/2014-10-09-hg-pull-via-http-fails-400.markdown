@@ -55,8 +55,8 @@ enough data for comparison between the two repositories, for server to send back
 only the missing changesets. We're nearing respectful number of 5000 commits
 which justifies need for larger request size. On the other hand, Mercurial
 is an industrial level system and much larger projects should be supported.
-Hence a natural solution: **enlarge allowed size of HTTP headers on the server
-side**.
+Hence a natural solution:
+**enlarge allowed size of HTTP headers on the server side**.
 
 And indeed
 <http://mercurial.selenic.com/wiki/HgWebInIisOnWindows#Troubleshooting>
@@ -73,5 +73,49 @@ huge user base. Are we alone in our problem? And here are some:
 There's even one very relevant bug on Mercurial:
 <http://bz.selenic.com/show_bug.cgi?id=3319>.
 
+After reviewing all those pages, the root cause becomes clear. Mercurial sees
+the repository as [DAG](http://en.wikipedia.org/wiki/Directed_acyclic_graph) of
+changesets taking into account the changeset itself, its parent(s) (generally
+one, two in case of merges) and children. Branches, tags and other things come
+as a filtering aid. In order to client to tell the server its status, it sends
+hashes for the topological heads in DAG - list of all the changesets that have
+no children, the most recent nodes in each line, ignoring any branches. The more
+such heads there are, the bigger message to server.
+
+Usually, there should be only one "main" head on the `default` branch, and
+probably a couple of others, while people develop in parallel or work on
+branches. And finally all parallel lines and branches merge into the mainstream.
+And here comes the caveat, initially found in bug discussions for Bitbucket
+and Mercurial (see the links above). When you merge two lines in `default`, two
+heads become one. But when you merge branch back to `default`, Mercurial expects
+you to close the branch. And you can do that in the following ways:
+
+    close then merge                merge then close
+    ----------------                ----------------
+    
+    @    default, head              @    default, head
+    |                               |
+    o    merge                      | x  close branch, head
+    |\                              | |
+    | x  close branch               o |  merge
+    | |                             |\|
+    o |  dev on default             o |  dev on default
+    | |                             | |
+    | o  dev on branch              | o  dev on branch
+    | |                             | |
+    | o  open branch                | o  open branch
+    |/                              |/
+    o    default                    o    default
+
+Until this week both approaches look they same to me. It's more of aestetic
+how exatly the branch is closed. Some advocate that if you merge first, then you
+can close at some later stage after making sure the feature is completed. It can
+be answered that merge should happen only after the feature is completed and any
+further changes to be done in different branch. But for mercurial the difference
+is essential: the left leaves only one head while the right leaves two of them.
+And the second will forever participate in communications to the server
+degrading performance and offensing scalability. So from now on, I'll always
+recommend
+**first close the branch in mercurial and only then to merge it back to default**.
 
 
