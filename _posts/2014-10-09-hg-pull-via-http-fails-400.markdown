@@ -60,6 +60,18 @@ side**.
 
 And indeed
 <http://mercurial.selenic.com/wiki/HgWebInIisOnWindows#Troubleshooting>
-recommends the very same thing.
+recommends the very same thing. And also presents the IIS defaults for the
+maximal header size - 16KB or 16384 bytes. And our 16504 come just a few beyond
+that.
+
+Looks like the problem is resolved. But another question arises - why. There
+are many repositories for other projects in our company served by the same
+server. Ours is not the largest by any means. More than that, Mercurial has a
+huge user base. Are we alone in our problem? And here are some:
+<https://bitbucket.org/site/master/issue/8263/http-400-bad-request-error-when-pulling>,
+<http://mercurial.808500.n3.nabble.com/Problem-pulling-through-http-proxy-td839537.html>.
+There's even one very relevant bug on Mercurial:
+<http://bz.selenic.com/show_bug.cgi?id=3319>.
+
 
 
