@@ -116,6 +116,22 @@ is essential: the left leaves only one head while the right leaves two of them.
 And the second will forever participate in communications to the server
 degrading performance and offensing scalability. So from now on, I'll always
 recommend
-**first close the branch in mercurial and only then to merge it back to default**.
+**first to close the branch in mercurial and only then to merge it back to default**.
 
+Guildeline for the case of completed features is clear. But what about the other
+cases? Like:
+
+* Discarded branches, that are closed and not merged into default
+* Release branches, that are being maintained in parallel to default
+* Other scenarios
+
+The goal should be minimizing the number of topological heads. As suggested in
+discussion of issue in Bitbucket, all discarded branches can be merged into one.
+Same can be done to all release branches: once they come to their end of life,
+merge them all into one dummy release branch. It should be remembered, that one
+can continue working on a closed branch and even close it again.
+
+Basically, the story ends here. For the curious, we currently stand at about
+250 branches closed and opened, and the problem arose at about 240 heads - most
+from branches that were merged first and closed after that.
 
