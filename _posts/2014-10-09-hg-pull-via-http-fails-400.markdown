@@ -5,9 +5,16 @@ date:   2014-10-09 18:14:00
 categories: computers
 ---
 
-<span style="background: yellow">
-**TODO:** since the post become so long, add an intro and summary sections.
-</span>
+## In short
+
+After a couple of months of normal work with Mercurial repository served by IIS
+server abruptly pulling attempts were responded with HTTP 400 error code. It
+took some time and skill to get the error details and the direct cause for the
+failure. Then we discovered that our branching workflow neglected some internal
+Mercurial logic. Finally there are some recommendations for a healthier
+usage of branches.
+
+## The problem arises
 
 It was Sunday evening. Coworker came and told me: "Team City fails; it can't
 access repository. Can you possibly look at this?" Actually, then it was time
@@ -24,6 +31,8 @@ on my computer, so I assumed it's an internal TeamCity problem and tried to
 workaround it, like removing caches or recreating the repository or using
 different protocols. But soon the very same problem started happen to all of us.
 We were unable to `hg pull` from our project repository.
+
+## What's the error?
 
 At that point it's became clear, that the problem lies in the central
 repository. Since `hg pull -v --debug` doesn't add much info we decide to
@@ -44,9 +53,19 @@ Meaning - mercurial will use port `8888` as a proxy. Phew, finally some first
 results. A couple of request-response run and the last one completes indeed
 with `400 bad request`. But now we have the entire response:
 
-<span style="background: yellow">
-**TODO:** insert here output from IIS - too long headers.
-</span>
+    HTTP/1.1 400 Bad Request
+    Content-Type: text/html; charset=us-ascii
+    Server: Microsoft-HTTPAPI/2.0
+    Date: Mon, 06 Oct 2014 11:12:22 GMT
+    Connection: close
+    Content-Length: 346
+    
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN""http://www.w3.org/TR/html4/strict.dtd">
+    <HTML><HEAD><TITLE>Bad Request</TITLE>
+    <META HTTP-EQUIV="Content-Type" Content="text/html; charset=us-ascii"></HEAD>
+    <BODY><h2>Bad Request - Request Too Long</h2>
+    <hr><p>HTTP Error 400. The size of the request headers is too long.</p>
+    </BODY></HTML>
 
 Here's the first culprit: too long headers. And indeed, the last request is
 16504 bytes long. Quite a large one, you would expect more from Mercurial...
@@ -63,6 +82,8 @@ And indeed
 recommends the very same thing. And also presents the IIS defaults for the
 maximal header size - 16KB or 16384 bytes. And our 16504 come just a few beyond
 that.
+
+## Getting deeper
 
 Looks like the problem is resolved. But another question arises - why. There
 are many repositories for other projects in our company served by the same
@@ -106,6 +127,8 @@ you to close the branch. And you can do that in the following ways:
     | o  open branch                | o  open branch
     |/                              |/
     o    default                    o    default
+
+## Conclusions and recommendations
 
 Until this week both approaches look they same to me. It's more of aestetic
 how exatly the branch is closed. Some advocate that if you merge first, then you
