@@ -4,8 +4,11 @@ title: About
 permalink: /about/
 ---
 
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](http://jekyllrb.com/)
+Hello. I'm Ilia Barahovsky, a developer. I am interested in computers, using
+them and writing software for them - and this is the place to share my thoughts
+with the world. I am also interested in other things, but as of now I choose a
+smaller audience for the other thoughts. :)
 
-You can find the source code for the Jekyll new theme at: [github.com/jglovier/jekyll-new](https://github.com/jglovier/jekyll-new)
+This blog is powered by [Jekyll](http://jekyllrb.com/) and hosted by
+[GitHub Pages](https://pages.github.com/).
 
-You can find the source code for Jekyll at [github.com/jekyll/jekyll](https://github.com/jekyll/jekyll)
