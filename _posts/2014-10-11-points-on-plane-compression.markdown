@@ -82,8 +82,23 @@ This comes to 2MB for 50K lines.
    numbers. In any case, such a precision is mostly enough for the modern
    screen resolutions. So now we stand at 2 bytes * 2 coordinates * 50K points =
    200KB. Not a bad progress. So far, so good!
+1. Is it possible to have only one byte for coordinate? Meaning reduce to a
+   range \[0 .. 255\]. For this we should define the plane to 256x256 squares.
+   Assuming our points doesn't require the entire range \[-30000 .. 30000\] but
+   crowd inside \[-1280 .. 1280\] then they fit precisely into 100 sqaures of
+   256x256 each. Inside each such square we need only one byte per coordinate.
+   And to define it one needs a header of: `(X, Y)` for the square corner and
+   the number of points in this square. Then array of twice the number of points
+   bytes will follow, like this:
 
-<span style="background: yellow">
-Fill details here...
-</span>
+        X,  Y,  n:  x1, y1; x2, y2; ...; xn, yn
+        2B  2B  2B  1B  1B  1B  1B       1B  1B
+
+        X,  Y,  n: ...
+
+   The number of points in one square is less then 50K, hence fit nicely into
+   two bytes. In total we have 100 squares * 6 bytes per square header = 600B.
+   Then all the points together require 1B * 2 coordinates * 50K points = 100KB
+   which with headers gives 101KB.
+
 
