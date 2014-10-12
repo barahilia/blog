@@ -100,5 +100,23 @@ This comes to 2MB for 50K lines.
    two bytes. In total we have 100 squares * 6 bytes per square header = 600B.
    Then all the points together require 1B * 2 coordinates * 50K points = 100KB
    which with headers gives 101KB.
+1. Can we reduce even further? Half a byte for coordinate, a byte for entire 2D
+   point, down towards \[0 .. 15\] range. Let's assume distribution of points
+   that is close to uniform. Then 50K points split to about 500 in every 256x256
+   square. Inside each there are 256 16x16 sub-squares with 2-3 points in every
+   sub-square. Per near uniformity assumption, we may assume each sub-square to
+   be occupied, hence one can write each of them them in some order, e.g. from
+   left to right, from bottom to top. And the only header needed is for number
+   of points in the sub-square, like this:
 
+        (0, 0) n:  x1, y1; x2, y2; ...; xn, yn
+               4b  4b  4b  4b  4b       4b  4b
+        (0,16) n:  ...
+        ...
+        (16,0) n:  ...
+
+   where `4b` stands for 4 bits or half a byte. Now there's 100 squares * 256
+   sub-squares in each * 0.5B per sub-square header = 13KB. In addition to 1KB
+   for square headers and 100KB / 2 = 50 KB for points themselves it leaves us
+   with bare 64KB in total!!
 
