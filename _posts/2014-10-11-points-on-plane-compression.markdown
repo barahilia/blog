@@ -60,7 +60,7 @@ comma-separated doubles in each line. That is something like:
     ...
     465.30588,188.11905
 
-This comes to 2MB for 50K lines.
+This comes to about 1.5MB for 50K lines.
 
 1. Probably the easiest compression might be a PNG file where all the points are
    already depicted. PNG format utilizes lossless compressions, is easy to
@@ -119,4 +119,31 @@ This comes to 2MB for 50K lines.
    sub-squares in each * 0.5B per sub-square header = 13KB. In addition to 1KB
    for square headers and 100KB / 2 = 50 KB for points themselves it leaves us
    with bare 64KB in total!!
+1. It can be noticed, that eventually, the ability to save less bits per each
+   single points was achieved due to organization of entire set in smaller units
+   with smaller area. And this is the essence of
+   [Huffman code](http://en.wikipedia.org/wiki/Huffman_coding) on which popular
+   achiving algorithms are based. So probably we don't need any code of our own?
+   Maybe usual compressing programs will do? And indeed, take the file
+   `ints.csv` like the following with 50K lines of size 500KB:
+
+        -960,1619
+        2592,805
+        ...
+        4382,3104
+
+   Next sort it and zip with maximal compression level:
+   
+        zip -9 ints.zip ints.csv                    # 231KB
+        7zr a ints.7z ints.csv                      # 210KB
+        
+        cat ints.csv | sort -n > ints.sort.csv      # 516KB
+        
+        zip -9 ints.sort.zip ints.sort.csv          # 188KB
+        7zr a ints.sort.7z ints.sort.csv            # 126KB
+
+   Meaning, `7-zip` indeed succeeds to utilize sorted data and reach results
+   comparable with our 256 squares encoding.
+
+TODO: sort by 256 and 16 squares, than compress and see results.
 
