@@ -10,9 +10,9 @@ categories: computers
 </span>
 
 * Background - v
-* Define the task
-* List several approaches
-* Specify 256-square and 16-square encodings
+* Define the task - v
+* List several approaches - v
+* Specify 256-square and 16-square encodings - v
 * Summarize - what's the recommended way
 
 ## Background
@@ -142,8 +142,16 @@ This comes to about 1.5MB for 50K lines.
         zip -9 ints.sort.zip ints.sort.csv          # 188KB
         7zr a ints.sort.7z ints.sort.csv            # 126KB
 
-   Meaning, `7-zip` indeed succeeds to utilize sorted data and reach results
-   comparable with our 256 squares encoding.
+   Meaning, `7-zip` indeed succeeds to utilize sorted data and to reach results
+   comparable with our 256 squares encoding - 126KB. One may assume even better
+   results if the file is arranged in the same way used by encodings: arrage
+   that all points that belong to the same 256x256 square adjust one another.
+   But experiment shows the opposite - archive size grows to about 150KB.
+1. Completely different approach will be to discover "patterns" in the points
+   and to describe them in a short manner. Here probably even more precision
+   can be lost, but more compact encoding can be achived. And probably the
+   decoded picture will look very similar to the real view and be easily
+   resizable.
 
-TODO: sort by 256 and 16 squares, than compress and see results.
+
 
