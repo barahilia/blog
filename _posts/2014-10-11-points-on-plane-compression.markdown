@@ -153,5 +153,13 @@ This comes to about 1.5MB for 50K lines.
    decoded picture will look very similar to the real view and be easily
    resizable.
 
+## Summary
+
+Apparently the optimal solution that require minimal investment and reaching
+good compression level would be the "sort and zip". Every modern browser
+supports compression, like `Content-Encoding: gzip` HTTP header and this is
+seamless for the application on the client side. So virtually the only thing
+needed for implementation is to sort the data. To make things even more faster
+a precompressed data can be saved in advance in the database.
 
 
