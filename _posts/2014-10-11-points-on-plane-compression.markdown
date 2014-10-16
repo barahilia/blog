@@ -5,16 +5,6 @@ date:   2014-10-11 20:58:00
 categories: computers
 ---
 
-<span style="background: yellow">
-**TODO:**
-</span>
-
-* Background - v
-* Define the task - v
-* List several approaches - v
-* Specify 256-square and 16-square encodings - v
-* Summarize - what's the recommended way
-
 ## Background
 
 In our website we need capability to depict a "live" 2D points viewer. Probably
