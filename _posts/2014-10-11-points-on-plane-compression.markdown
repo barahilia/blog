@@ -50,98 +50,117 @@ comma-separated doubles in each line. That is something like:
     ...
     465.30588,188.11905
 
-This comes to about 1.5MB for 50K lines.
+This comes to about 1.5MB for 50K lines. This is a baseline for reduction.
 
-1. Probably the easiest compression might be a PNG file where all the points are
-   already depicted. PNG format utilizes lossless compressions, is easy to
-   generate, doesn't require parsing and can easily support pan and zoom. But
-   the quality of an image quickly reduces with zooming. Actually, initially
-   generated image can be made very large, which will allow for a better zooming
-   with the cost of resulted file size. A pretty good-looking picture can fit to
-   a 100KB file, which you can't really enlarge.
-1. Double numbers are long in textual representation, while occupy only 8 bytes
-   in binary format. Given that we may simply encode our number pairs in binary
-   format without any delimiters: 8 bytes for the x coordinate, 8 bytes for y,
-   and so on. In total 8 bytes * 2 coordinates * 50K points = 800KB.
-1. Next, when presenting many points in wide rectangle, you don't really need
-   the precision of double. Unless one comes to a very fine zooming, which we in
-   our specific project don't need. So doubles can be simply replaced with
-   integers and even - note the range! - to signed short integers of 2 bytes
-   each. I'm using here some specifics related to the project, but this can be
-   easily generalized. Simply rescale different set of points to fit into short
-   numbers. In any case, such a precision is mostly enough for the modern
-   screen resolutions. So now we stand at 2 bytes * 2 coordinates * 50K points =
-   200KB. Not a bad progress. So far, so good!
-1. Is it possible to have only one byte for coordinate? Meaning reduce to a
-   range \[0 .. 255\]. For this we should define the plane to 256x256 squares.
-   Assuming our points doesn't require the entire range \[-30000 .. 30000\] but
-   crowd inside \[-1280 .. 1280\] then they fit precisely into 100 sqaures of
-   256x256 each. Inside each such square we need only one byte per coordinate.
-   And to define it one needs a header of: `(X, Y)` for the square corner and
-   the number of points in this square. Then array of twice the number of points
-   bytes will follow, like this:
+### Save an image
 
-        X,  Y,  n:  x1, y1; x2, y2; ...; xn, yn
-        2B  2B  2B  1B  1B  1B  1B       1B  1B
+Probably the easiest compression might be a PNG file where all the points are
+already depicted. PNG format utilizes lossless compressions, is easy to
+generate, doesn't require parsing and can easily support pan and zoom. But
+the quality of an image quickly reduces with zooming. Actually, initially
+generated image can be made very large, which will allow for a better zooming
+with the cost of resulted file size. A pretty good-looking picture can fit to
+a 100KB file, which you can't really enlarge.
 
-        X,  Y,  n: ...
+### Replace text with binary
 
-   The number of points in one square is less then 50K, hence fit nicely into
-   two bytes. In total we have 100 squares * 6 bytes per square header = 600B.
-   Then all the points together require 1B * 2 coordinates * 50K points = 100KB
-   which with headers gives 101KB.
-1. Can we reduce even further? Half a byte for coordinate, a byte for entire 2D
-   point, down towards \[0 .. 15\] range. Let's assume distribution of points
-   that is close to uniform. Then 50K points split to about 500 in every 256x256
-   square. Inside each there are 256 16x16 sub-squares with 2-3 points in every
-   sub-square. Per near uniformity assumption, we may assume each sub-square to
-   be occupied, hence one can write each of them them in some order, e.g. from
-   left to right, from bottom to top. And the only header needed is for number
-   of points in the sub-square, like this:
+Double numbers are long in textual representation, while occupy only 8 bytes
+in binary format. Given that we may simply encode our number pairs in binary
+format without any delimiters: 8 bytes for the x coordinate, 8 bytes for y,
+and so on. In total 8 bytes * 2 coordinates * 50K points = 800KB.
 
-        (0, 0) n:  x1, y1; x2, y2; ...; xn, yn
-               4b  4b  4b  4b  4b       4b  4b
-        (0,16) n:  ...
-        ...
-        (16,0) n:  ...
+### Approximate doubles with ints
 
-   where `4b` stands for 4 bits or half a byte. Now there's 100 squares * 256
-   sub-squares in each * 0.5B per sub-square header = 13KB. In addition to 1KB
-   for square headers and 100KB / 2 = 50 KB for points themselves it leaves us
-   with bare 64KB in total!!
-1. It can be noticed, that eventually, the ability to save less bits per each
-   single points was achieved due to organization of entire set in smaller units
-   with smaller area. And this is the essence of
-   [Huffman code](http://en.wikipedia.org/wiki/Huffman_coding) on which popular
-   achiving algorithms are based. So probably we don't need any code of our own?
-   Maybe usual compressing programs will do? And indeed, take the file
-   `ints.csv` like the following with 50K lines of size 500KB:
+Next, when presenting many points in wide rectangle, you don't really need
+the precision of double. Unless one comes to a very fine zooming, which we in
+our specific project don't need. So doubles can be simply replaced with
+integers and even - note the range! - to signed short integers of 2 bytes
+each. I'm using here some specifics related to the project, but this can be
+easily generalized. Simply rescale different set of points to fit into short
+numbers. In any case, such a precision is mostly enough for the modern
+screen resolutions. So now we stand at 2 bytes * 2 coordinates * 50K points =
+200KB. Not a bad progress. So far, so good!
 
-        -960,1619
-        2592,805
-        ...
-        4382,3104
+### Split to 256x256 squares
 
-   Next sort it and zip with maximal compression level:
-   
-        zip -9 ints.zip ints.csv                    # 231KB
-        7zr a ints.7z ints.csv                      # 210KB
-        
-        cat ints.csv | sort -n > ints.sort.csv      # 516KB
-        
-        zip -9 ints.sort.zip ints.sort.csv          # 188KB
-        7zr a ints.sort.7z ints.sort.csv            # 126KB
+Is it possible to have only one byte for coordinate? Meaning reduce to a
+range \[0 .. 255\]. For this we should define the plane to 256x256 squares.
+Assuming our points doesn't require the entire range \[-30000 .. 30000\] but
+crowd inside \[-1280 .. 1280\] then they fit precisely into 100 sqaures of
+256x256 each. Inside each such square we need only one byte per coordinate.
+And to define it one needs a header of: `(X, Y)` for the square corner and
+the number of points in this square. Then array of twice the number of points
+bytes will follow, like this:
 
-   Meaning, `7-zip` indeed succeeds to utilize sorted data and to reach results
-   comparable with our 256 squares encoding - 126KB. One may assume even better
-   results if the file is arranged in the same way used by encodings: arrage
-   that all points that belong to the same 256x256 square adjust one another.
-   But experiment shows the opposite - archive size grows to about 150KB.
-1. Completely different approach will be to discover "patterns" in the points
-   and to describe them in a short manner. Here probably even more precision
-   can be lost, but more compact encoding can be achived. And probably the
-   decoded picture will look very similar to the real view and be easily
-   resizable.
+    X,  Y,  n:  x1, y1; x2, y2; ...; xn, yn
+    2B  2B  2B  1B  1B  1B  1B       1B  1B
+
+    X,  Y,  n: ...
+
+The number of points in one square is less then 50K, hence fit nicely into
+two bytes. In total we have 100 squares * 6 bytes per square header = 600B.
+Then all the points together require 1B * 2 coordinates * 50K points = 100KB
+which with headers gives 101KB.
+
+### Split to 16x16 sub-squares
+
+Can we reduce even further? Half a byte for coordinate, a byte for entire 2D
+point, down towards \[0 .. 15\] range. Let's assume distribution of points
+that is close to uniform. Then 50K points split to about 500 in every 256x256
+square. Inside each there are 256 16x16 sub-squares with 2-3 points in every
+sub-square. Per near uniformity assumption, we may assume each sub-square to
+be occupied, hence one can write each of them them in some order, e.g. from
+left to right, from bottom to top. And the only header needed is for number
+of points in the sub-square, like this:
+
+    (0, 0) n:  x1, y1; x2, y2; ...; xn, yn
+           4b  4b  4b  4b  4b       4b  4b
+    (0,16) n:  ...
+    ...
+    (16,0) n:  ...
+
+where `4b` stands for 4 bits or half a byte. Now there's 100 squares * 256
+sub-squares in each * 0.5B per sub-square header = 13KB. In addition to 1KB
+for square headers and 100KB / 2 = 50 KB for points themselves it leaves us
+with bare 64KB in total!!
+
+### Sort then compress
+
+It can be noticed, that eventually, the ability to save less bits per each
+single points was achieved due to organization of entire set in smaller units
+with smaller area. And this is the essence of
+[Huffman code](http://en.wikipedia.org/wiki/Huffman_coding) on which popular
+achiving algorithms are based. So probably we don't need any code of our own?
+Maybe usual compressing programs will do? And indeed, take the file
+`ints.csv` like the following with 50K lines of size 500KB:
+
+    -960,1619
+    2592,805
+    ...
+    4382,3104
+
+Next sort it and zip with maximal compression level:
+
+    zip -9 ints.zip ints.csv                    # 231KB
+    7zr a ints.7z ints.csv                      # 210KB
+    
+    cat ints.csv | sort -n > ints.sort.csv      # 516KB
+    
+    zip -9 ints.sort.zip ints.sort.csv          # 188KB
+    7zr a ints.sort.7z ints.sort.csv            # 126KB
+
+Meaning, `7-zip` indeed succeeds to utilize sorted data and to reach results
+comparable with our 256 squares encoding - 126KB. One may assume even better
+results if the file is arranged in the same way used by encodings: arrage
+that all points that belong to the same 256x256 square adjust one another.
+But experiment shows the opposite - archive size grows to about 150KB.
+
+### An idea: describe with "patterns"
+
+Completely different approach will be to discover "patterns" in the points and
+to describe them in a short manner. Here probably even more precision can be
+lost, but more compact encoding can be achived. And probably the decoded picture
+will look very similar to the real view and be easily resizable.
 
 ## Summary
 
