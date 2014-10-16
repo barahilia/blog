@@ -1,18 +1,22 @@
 ---
 layout: post
 title:  "It's all bytes..."
-date:   2014-10-05 22:24:00
-categories: encoding serialization endianity
+date:   2014-10-16 15:03:00
+categories: computers
 ---
-We all know for ages, that computers work with bytes, normally, a byte comprises 8 bits and can take value from 0 to 255. There are 128 characters in basic ASCII encoding and this fit precisely into one byte even leaving room for localization. And `int`, which is generally 32-bit number, well... takes 4 bytes. Trivial things? For anybody in computer engineering indeed. But then you come for some specific task and thinks to yourself: "What on earth is going on?!"
 
-Let's us start with some simple example: write a 32-bit integer to a file in binary format, as 4 bytes and read it back.
+Every developer knows that computers and programming languages operate on bytes.
+Hard disks are measured in gigabytes, memory is addressed up to single byte,
+double number takes 8 bytes and so on. Byte comprises 8 bits and can take value
+from 0 to 255. But when it comes to some very spesific questions and actions we
+halt and ask Google. And then copy ready recipes from
+[StackOverflow](http://stackoverflow.com/) without really understanding all the
+nuances. E.g.:
 
-**TODO**:
+* How to read entire file to a string?
+* How primitive data types are stored in memory?
+* Why binary data from one computer looks like gibberish on another?
 
-* write a quick sample in C
-* explain that in C strings are simply 0-ended byte arrays; no real separation between the char and byte
-* show that in Python there's such a separation; default string is ASCII-based chars differ from bytearray
-* show that in C# string is already Unicode by default
-* explain how UTF-8 works; BOM
+Let's try to describe some basic terms and to see how one may operate with them
+in C++, Python (2.x) and C#.
 
