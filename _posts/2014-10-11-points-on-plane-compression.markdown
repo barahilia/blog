@@ -103,6 +103,9 @@ two bytes. In total we have 100 squares * 6 bytes per square header = 600B.
 Then all the points together require 1B * 2 coordinates * 50K points = 100KB
 which with headers gives 101KB.
 
+The encoding part was implemented and can be found in this
+[Gist](https://gist.github.com/barahilia/0b05006c8e33f453e4f4).
+
 ### Split to 16x16 sub-squares
 
 Can we reduce even further? Half a byte for coordinate, a byte for entire 2D
