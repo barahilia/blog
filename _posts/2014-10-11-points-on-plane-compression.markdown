@@ -7,30 +7,30 @@ categories: computers
 
 ## Background
 
-In our website we need capability to depict a "live" 2D points viewer. Probably
-the best example would be the [Google Maps](https://maps.google.com/), but
-our control is much simpler. While it does need zoom-in and panning, it's mostly
+In our website we need a capability to depict "live" 2D points viewer. Probably
+the best example would be the [Google Maps](https://maps.google.com/), but our
+control is much simpler. While it does need zoom in and panning, it's mostly
 presents only one kind of objects, like "homes" whose appearance is defined
 solely by their 2-dimensional coordinate `(x, y)`. But there are a couple of
 thousands of them. 10K - 100K is an actual range. For the rest of the post we'll
-assume 50K points as a close to an average number in that range.
+assume 50K points as a close to the average number in that range.
 
 Previously, for a rich client, the viewer was built with
 [OpenGL](https://www.opengl.org). After a move to web a nice and simple control
 was developed on top of [canvas](www.w3schools.com/html/html5_canvas.asp)
-element with standard JavaScript library running in Chrome with no extensions.
-After some not too heavy optimizations it became very fluent and responsive in
-terms of presentation, pan and zoom times.
+element powered by a standard JavaScript library running in Chrome with no
+extensions. After some not too heavy optimizations it became very fluent and
+responsive in terms of presentation, pan and zoom times.
 
 And with all that speed, we suddenly became aware of communication times. The
 rich client loaded all the data including the points at startup. But now loading
-the web page with the viewer started taking dozen of seconds to half a minute.
-One generally doesn't wait that long for a browser. Actually several factors
-contribute to that time: read data from the database, encode in JSON, send
-through HTTP and decode back. Data sent came to 20-25MB, as each point has some
-fields in addition to coordinates. The issue was temporarily mitigated with
-compression, and total bulk reduced to 2MB. But whether one can do much better
-for this specific kind of data?
+the web page with the viewer started taking dozens of seconds. One generally
+doesn't wait that much for a browser. Actually several factors contribute to
+that time: read data from the database, encode it in JSON, send it through HTTP
+and decode back. Data sent came to 20-25MB, as each point has some fields in
+addition to coordinates. The issue was temporarily mitigated with compression,
+and total bulk was reduced to 2MB. But whether one can do much better for this
+specific kind of data?
 
 ## The task
 
