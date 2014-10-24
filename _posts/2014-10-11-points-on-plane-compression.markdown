@@ -17,7 +17,7 @@ assume 50K points as a close to the average number in that range.
 
 Previously, for a rich client, the viewer was built with
 [OpenGL](https://www.opengl.org). After a move to web a nice and simple control
-was developed on top of [canvas](www.w3schools.com/html/html5_canvas.asp)
+was developed on top of [canvas](http://www.w3schools.com/html/html5_canvas.asp)
 element powered by a standard JavaScript library running in Chrome with no
 extensions. After some not too heavy optimizations it became very fluent and
 responsive in terms of presentation, pan and zoom times.
