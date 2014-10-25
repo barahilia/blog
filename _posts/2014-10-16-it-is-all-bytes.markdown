@@ -17,13 +17,13 @@ nuances. E.g.:
 * How primitive data types are stored in memory?
 * Why binary data from one computer looks like gibberish on another?
 
-Let's try to describe some basic terms and to see how one may operate with them
-in C++, Python (2.x) and C#.
+Let's try to describe some basic terms and to see how one may program them in
+C++, Python (2.x) and C#.
 
 This post intends to shed the light on how data represented in bytes looks like
-in different mediums. But how to make bytes of data? For this encoding is used,
-and there's at least one for every type of data. Here this is assumed to be
-known or some relevant details are explained on the way.
+in different mediums. But how to make bytes of data? For this **encoding** is
+used, and there's at least one for every type of data. Here this is assumed to
+be known or some relevant details are explained on the way.
 
 ## Notation
 
@@ -35,12 +35,12 @@ decimal values 10, 16, 254 will be written as `\x0a\x10\xfe`.
 ## Basic terms
 
 An unsigned "short" 16-bit integer requires 2 bytes. E.g. since
-`1024 = 4 * 256 + 0` the number 1024 can be represented with 2 bytes with
-values: 4 and 0. But how exactly do we write them? Is it `\x04\x00` or
-`\x00\x04`? It occurs that both is possible and this is what
+`1025 = 4 * 256 + 1` the number 1024 can be represented with 2 bytes with
+values: 4 and 1. But how exactly do we write them? Is it `\x04\x01` or
+`\x01\x04`? It occurs that both is possible and this is what
 [*Endianness*](http://en.wikipedia.org/wiki/Endianness) is all about. The first
-variant `\x04\x00` is called *big-endian*; it is used in Motorola 68000 and
-PowerPC and some network protocols. The second variant '\x00\x04' is called
+variant `\x04\x01` is called *big-endian*; it is used in Motorola 68000 and
+PowerPC and some network protocols. The second variant `\x01\x04` is called
 *little-endian* and is used in Intel x86 and AMD64.
 
 
