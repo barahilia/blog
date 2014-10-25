@@ -21,9 +21,11 @@ Let's try to describe some basic terms and to see how one may program them in
 C++, Python (2.x) and C#.
 
 This post intends to shed the light on how data represented in bytes looks like
-in different mediums. But how to make bytes of data? For this **encoding** is
+in different mediums. But how to make bytes of data? For this *encoding* is
 used, and there's at least one for every type of data. Here this is assumed to
-be known or some relevant details are explained on the way.
+be known or some relevant details are explained on the way. As well to keep
+the post shorter, some more advanced aspects of discussed concepts are
+deliberately ignored.
 
 ## Notation
 
@@ -34,6 +36,8 @@ decimal values 10, 16, 254 will be written as `\x0a\x10\xfe`.
 
 ## Basic terms
 
+### Endianness
+
 An unsigned "short" 16-bit integer requires 2 bytes. E.g. since
 `1025 = 4 * 256 + 1` the number 1024 can be represented with 2 bytes with
 values: 4 and 1. But how exactly do we write them? Is it `\x04\x01` or
@@ -42,5 +46,20 @@ values: 4 and 1. But how exactly do we write them? Is it `\x04\x01` or
 variant `\x04\x01` is called *big-endian*; it is used in Motorola 68000 and
 PowerPC and some network protocols. The second variant `\x01\x04` is called
 *little-endian* and is used in Intel x86 and AMD64.
+
+Now stop for a second and think, how data is stored in memory or on disk? Yes,
+that's it. Usually it happens in native binary format, which is what processor
+operates on. And when data is sent over network it may be not in the native
+order, but rather in order dictated by the protocol. So your Intel Core i7
+processor will take the number `1025` as `\x01\x04` and reorder bytes to
+`\x04\x01` before using it for a Total Length field in IP datagram and sending
+it over Internet. As a side note, such order is specified by
+[RFC 791](http://tools.ietf.org/html/rfc791#page-39) from 1981, but not by
+earlier [RFC 760](http://tools.ietf.org/html/rfc760) from 1980.
+
+The very same ideas apply when working with larger number of bytes, like 32-bit
+or 64-bit integer.
+
+### Alighment
 
 
