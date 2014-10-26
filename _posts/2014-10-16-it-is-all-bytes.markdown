@@ -62,4 +62,21 @@ or 64-bit integer.
 
 ### Alighment
 
+Now, that we are mostly clear with primitive data types, let's talk about
+structs. While computer addresses bytes, the operations are usually performed
+on larger chunkgs. 64-bit processor natively summarize 8-byte numbers. SSE2
+instruction takes 128-bit as operands. Cache blocks can be 64-byte long. From
+all these examples it should be logical, that data should be optimized for
+such things. For a struct of 1-byte character and 2-byte "short" integer one
+may allocate 3 butes. But those 3 bytes should play well with 4-byte memory
+access command. In particular if our struct is stored in array of such.
+So compiler *pad* 3-bytes to 4 by adding one non-mininfull byte. And similarly
+the "short" integer in struct will come to even memory address thus
+faciliating some operations.
+
+All these is called *alignment*. And this is the reason why bytes can appear
+in different locations in memory or in binary format.
+
+### Character
+
 
