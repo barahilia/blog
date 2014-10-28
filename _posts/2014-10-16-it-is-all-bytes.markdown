@@ -79,4 +79,18 @@ in different locations in memory or in binary format.
 
 ### Character
 
+This is arguably the most difficult concept of all discussed here. Probably the
+reason is the illusory simplicity. Indeed, looking at `A` letter we know that it
+maps to decimal code `65`. Every even non-american keyboard has such a key and
+consoles knowns how to depict this letter from `65` code in memory or read from
+a file. Why to complicate simple things?
+
+And indeed mainstream computer languages before 90's didn't make much deal of
+characters and used a byte for one and bytearray for strings. How do they call
+it - [ASCII](http://en.wikipedia.org/wiki/ASCII). But wait, ASCII encodes only
+128 characters, not 256 and you have other languages than English. Hmmm. Yes,
+now we mostly work with [Unicode](http://en.wikipedia.org/wiki/Unicode), which
+cover most alphabets and other symbols, latest versions more than 110,000. And
+this number is far beyond ability of one single byte.
+
 
