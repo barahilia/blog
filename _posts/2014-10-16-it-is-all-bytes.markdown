@@ -80,7 +80,7 @@ in different locations in memory or in binary format.
 ### Character
 
 This is arguably the most difficult concept of all discussed here. Probably the
-reason is the illusory simplicity. Indeed, looking at `A` letter we know that it
+reason is its illusory simplicity. Indeed, looking at `A` letter we know that it
 maps to decimal code `65`. Every even non-american keyboard has such a key and
 consoles knowns how to depict this letter from `65` code in memory or read from
 a file. Why to complicate simple things?
@@ -92,5 +92,36 @@ it - [ASCII](http://en.wikipedia.org/wiki/ASCII). But wait, ASCII encodes only
 now we mostly work with [Unicode](http://en.wikipedia.org/wiki/Unicode), which
 cover most alphabets and other symbols, latest versions more than 110,000. And
 this number is far beyond ability of one single byte.
+
+## To code!
+
+### C++
+
+Let's start from a simple program:
+
+    struct data {
+        char c;
+        int i;
+    };
+
+    int main() {
+        int i = 1025; // = 256*4 + 1 = \x01\x04
+        short s = 16;
+        char c = 127;
+        data d; d.c = 65; d.i = 31;
+
+        return 0;
+    }
+
+Compile it with `g++ -g 1.cpp` and hit debugger `gdb a.out` and execute:
+
+    (gdb) break 20          // set breakpoint at return statement
+    (gdb) start             // run the program, stop at main entrance
+    (gdb) continue          // run to breakpoint
+    (gdb) print &i          // print memory address of the first variable
+    $5 = (int *) 0xbffff054
+    (gdb) x/24b 0xbffff050  // examine 24 bytes in memory starting at
+    0xbffff050:     -60     127     16      0       1       4       0       0
+    0xbffff058:	    65	-121 4	8	31	0	0	0
 
 
