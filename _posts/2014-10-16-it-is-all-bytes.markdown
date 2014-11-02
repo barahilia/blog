@@ -93,6 +93,16 @@ now we mostly work with [Unicode](http://en.wikipedia.org/wiki/Unicode), which
 cover most alphabets and other symbols, latest versions more than 110,000. And
 this number is far beyond ability of one single byte.
 
+The story begins with the term *charset* - or code page, or charmap. It enlists
+characters in our domain and gives their numbers - encoding. Some characters,
+like `\n` end-of-line are functional and not printable. Others even not used in
+textual files at all. There are many extensions of ASCII encoding national
+letters and symbols with numbers 128-255 giving perfect fit to one byte code.
+But in case of Unicode domain is significantly larger and in general 4 bytes are
+used. *Encodings* define how to save Unicode character in file.
+[UTF-8](http://en.wikipedia.org/wiki/UTF-8) is the dominant encoding in
+Internet.
+
 ## To code!
 
 ### C++
@@ -121,7 +131,19 @@ Compile it with `g++ -g 1.cpp` and hit debugger `gdb a.out` and execute:
     (gdb) print &i          // print memory address of the first variable
     $5 = (int *) 0xbffff054
     (gdb) x/24b 0xbffff050  // examine 24 bytes in memory starting at
-    0xbffff050:     -60     127     16      0       1       4       0       0
-    0xbffff058:	    65	-121 4	8	31	0	0	0
+    0xbffff050:     -60   c:127    s:16-------0     i:1-------4-------0-------0
+    0xbffff058:	 d.c:65    -121       4       8  d.i:31-------0-------0-------0
+
+Look, how little-endian and alignment manifest themselves in this example. The
+4-byte long integer numbers are placed at memory addresses that divide to 4
+without remainder and there's pad of 3 bytes between `d.c` one byte and `d.i`.
+You may also pay attention, that compiler reordered local variables but left
+layout of struct members intact. This is normal behavior. In between random
+padding bytes are left.
+
+The `char` data type in C/C++ is one byte long. It is convenient for work with
+ASCII files or direct map between memory, byte array and file content. And since
+the string is essentially byte array, one may easily read entire file or its
+part to the memory and use it as text or binary.
 
 
