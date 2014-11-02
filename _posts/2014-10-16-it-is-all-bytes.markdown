@@ -8,7 +8,7 @@ categories: computers
 Every developer knows that computers and programming languages operate on bytes.
 Hard disks are measured in gigabytes, memory is addressed up to single byte,
 double number takes 8 bytes and so on. Byte comprises 8 bits and can take value
-from 0 to 255. But when it comes to some very spesific questions and actions we
+from 0 to 255. But when it comes to some very specific questions and actions we
 halt and ask Google. And then copy ready recipes from
 [StackOverflow](http://stackoverflow.com/) without really understanding all the
 nuances. E.g.:
@@ -64,15 +64,15 @@ or 64-bit integer.
 
 Now, that we are mostly clear with primitive data types, let's talk about
 structs. While computer addresses bytes, the operations are usually performed
-on larger chunkgs. 64-bit processor natively summarize 8-byte numbers. SSE2
+on larger chunks. 64-bit processor natively summarize 8-byte numbers. SSE2
 instruction takes 128-bit as operands. Cache blocks can be 64-byte long. From
 all these examples it should be logical, that data should be optimized for
 such things. For a struct of 1-byte character and 2-byte "short" integer one
-may allocate 3 butes. But those 3 bytes should play well with 4-byte memory
+may allocate 3 bytes. But those 3 bytes should play well with 4-byte memory
 access command. In particular if our struct is stored in array of such.
-So compiler *pad* 3-bytes to 4 by adding one non-mininfull byte. And similarly
+So compiler *pad* 3-bytes to 4 by adding one non-mininful byte. And similarly
 the "short" integer in struct will come to even memory address thus
-faciliating some operations.
+facilitating some operations.
 
 All these is called *alignment*. And this is the reason why bytes can appear
 in different locations in memory or in binary format.
@@ -145,5 +145,43 @@ The `char` data type in C/C++ is one byte long. It is convenient for work with
 ASCII files or direct map between memory, byte array and file content. And since
 the string is essentially byte array, one may easily read entire file or its
 part to the memory and use it as text or binary.
+
+### Python 2.x
+
+From "bytes" perspective, Python 2.x is very similar to C. Default strings are
+also byte arrays. So one can read entire file with `s = open("file.ext").read()`
+and process it as ASCII string or as binary data. Python is however more limited
+in raw memory access. While in C every single byte is accessible with pointers,
+Python is closer to human kind. It has dedicated
+[struct](https://docs.python.org/2/library/struct.html) module packs and unpacks
+bytes. See for example:
+
+    from struct import pack, unpack
+
+    p = pack("!ih", 65, 66)         # network order: integer, short
+    open('data.dat', 'w').write(p)
+    print repr(p)                   # '\x00\x00\x00A\x00B'
+
+    s = open('data.dat').read()
+    t = unpack("!ih", s)
+    print t                         # (65, 66)
+
+Note, that we specified the byte order - network or big-endian, so that this
+file will gain the same results on all architectures. With the same ease, one
+may do byte manipulations with this module. E.g. split 32-bit integer to two
+16-bit shorts, just like in C.
+
+Python 2.x also provides `unicode` data type for Unicode strings. Given file:
+
+    aaa угу bbb
+
+(note Russion letters in the middle) we may do:
+
+    s = open('text.txt').read() # incorrectly reads as ASCII / byte array
+    print repr(s)               # 'aaa \xd0\xb5\xd0\xbb\xd1\x8c bbb\n'
+    
+    import codecs               # encoder/decoder
+    u = codecs.open("text.txt", "r", "utf-8").read()
+    print repr(u)               # u'aaa \u0435\u043b\u044c bbb\n'
 
 
