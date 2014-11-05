@@ -184,4 +184,31 @@ Python 2.x also provides `unicode` data type for Unicode strings. Given file:
     u = codecs.open("text.txt", "r", "utf-8").read()
     print repr(u)               # u'aaa \u0435\u043b\u044c bbb\n'
 
+### C\#
+
+C\# is a modern languages. Being such it's fully aware of byte quirks and the
+the difference between character and byte. The
+[char](http://msdn.microsoft.com/en-us/library/x9h8tsay.aspx) data type
+explicitly represents a Unicode character. It is 16-bit long which is enough for
+most usages. So while we're working with data, we have to tell .NET plainly that
+bytes should be read or written:
+
+    public static void Main()
+    {
+        int i = 65; short s = 66;
+        var bytes = Enumerable.Concat(
+            BitConverter.GetBytes(i),
+            BitConverter.GetBytes(s)
+        );        
+        File.WriteAllBytes("bytes.bin", bytes.ToArray());
+        
+        byte[] read = File.ReadAllBytes("bytes.bin");
+        Console.WriteLine(
+            "Read: int {0} and short {1}",
+            BitConverter.ToInt32(read, 0),
+            BitConverter.ToInt16(read, 4)
+        );
+    }
+
+
 
