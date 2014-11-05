@@ -10,7 +10,7 @@ Hard disks are measured in gigabytes, memory is addressed up to single byte,
 double number takes 8 bytes and so on. Byte comprises 8 bits and can take value
 from 0 to 255. But when it comes to some very specific questions and actions we
 halt and ask Google. And then copy ready recipes from
-[StackOverflow](http://stackoverflow.com/) without really understanding all the
+[Stack Overflow](http://stackoverflow.com/) without really understanding all the
 nuances. E.g.:
 
 * How to read entire file to a string?
@@ -60,7 +60,7 @@ earlier [RFC 760](http://tools.ietf.org/html/rfc760) from 1980.
 The very same ideas apply when working with larger number of bytes, like 32-bit
 or 64-bit integer.
 
-### Alighment
+### Alignment
 
 Now, that we are mostly clear with primitive data types, let's talk about
 structs. While computer addresses bytes, the operations are usually performed
@@ -70,7 +70,7 @@ all these examples it should be logical, that data should be optimized for
 such things. For a struct of 1-byte character and 2-byte "short" integer one
 may allocate 3 bytes. But those 3 bytes should play well with 4-byte memory
 access command. In particular if our struct is stored in array of such.
-So compiler *pad* 3-bytes to 4 by adding one non-mininful byte. And similarly
+So compiler *pad* 3-bytes to 4 by adding one non-meaningful byte. And similarly
 the "short" integer in struct will come to even memory address thus
 facilitating some operations.
 
@@ -85,7 +85,7 @@ maps to decimal code `65`. Every even non-american keyboard has such a key and
 consoles knowns how to depict this letter from `65` code in memory or read from
 a file. Why to complicate simple things?
 
-And indeed mainstream computer languages before 90's didn't make much deal of
+And indeed mainstream computer languages before 90's did not make much deal of
 characters and used a byte for one and bytearray for strings. How do they call
 it - [ASCII](http://en.wikipedia.org/wiki/ASCII). But wait, ASCII encodes only
 128 characters, not 256 and you have other languages than English. Hmmm. Yes,
@@ -132,7 +132,7 @@ Compile it with `g++ -g 1.cpp` and hit debugger `gdb a.out` and execute:
     $5 = (int *) 0xbffff054
     (gdb) x/24b 0xbffff050  // examine 24 bytes in memory starting at
     0xbffff050:     -60   c:127    s:16-------0     i:1-------4-------0-------0
-    0xbffff058:	 d.c:65    -121       4       8  d.i:31-------0-------0-------0
+    0xbffff058:  d.c:65    -121       4       8  d.i:31-------0-------0-------0
 
 Look, how little-endian and alignment manifest themselves in this example. The
 4-byte long integer numbers are placed at memory addresses that divide to 4
@@ -175,7 +175,7 @@ Python 2.x also provides `unicode` data type for Unicode strings. Given file:
 
     aaa угу bbb
 
-(note Russion letters in the middle) we may do:
+(note Russian letters in the middle) we may do:
 
     s = open('text.txt').read() # incorrectly reads as ASCII / byte array
     print repr(s)               # 'aaa \xd0\xb5\xd0\xbb\xd1\x8c bbb\n'
