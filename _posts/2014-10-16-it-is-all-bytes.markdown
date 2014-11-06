@@ -186,8 +186,8 @@ Python 2.x also provides `unicode` data type for Unicode strings. Given file:
 
 ### C\#
 
-C\# is a modern languages. Being such it's fully aware of byte quirks and the
-the difference between character and byte. The
+C\# is a modern language. Being such it's fully aware of byte quirks and the
+difference between character and byte. The
 [char](http://msdn.microsoft.com/en-us/library/x9h8tsay.aspx) data type
 explicitly represents a Unicode character. It is 16-bit long which is enough for
 most usages. So while we're working with data, we have to tell .NET plainly that
@@ -210,5 +210,16 @@ bytes should be read or written:
         );
     }
 
+And what will happen if textual file is read into a string? Let's try:
+
+    public static void Main()
+    {
+        string s = File.ReadAllText("text.txt");
+        Console.WriteLine(s); // aaa угу bbb
+    }
+
+[`File.ReadAllText()`](http://msdn.microsoft.com/en-us/library/ms143368(v=vs.110).aspx)
+automatically detects UTF-8 encoding and loads file content correctly. C\# makes
+clear distinction between the byte array the string.
 
 
