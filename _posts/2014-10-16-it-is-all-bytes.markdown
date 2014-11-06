@@ -222,4 +222,10 @@ And what will happen if textual file is read into a string? Let's try:
 automatically detects UTF-8 encoding and loads file content correctly. C\# makes
 clear distinction between the byte array the string.
 
+## Bottom line
+
+All data is made of bytes. To build basic types as integer, struct or string one
+should be aware of *endianness*, *alignment* and *characters*. We understood how
+to operate on those concepts in three mainstream programming languages C++,
+Python and C\#.
 
