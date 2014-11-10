@@ -13,35 +13,37 @@ halt and ask Google. And then copy ready recipes from
 [Stack Overflow](http://stackoverflow.com/) without really understanding all the
 nuances. E.g.:
 
-* How to read entire file to a string?
+* How to read an entire file to a string?
 * How primitive data types are stored in memory?
 * Why binary data from one computer looks like gibberish on another?
 
-Let's try to describe some basic terms and to see how one may program them in
+Let's try to describe some basic terms and to see how one may express them in
 C++, Python (2.x) and C#.
 
-This post intends to shed the light on how data represented in bytes looks like
+This post intends to shed some light on how data represented in bytes looks like
 in different mediums. But how to make bytes of data? For this *encoding* is
 used, and there's at least one for every type of data. Here this is assumed to
-be known or some relevant details are explained on the way. As well to keep
-the post shorter, some more advanced aspects of discussed concepts are
+be known or some relevant details are explained on the way. As well in order to
+keep the post shorter, some advanced aspects of discussed concepts are
 deliberately ignored.
 
 ## Notation
 
-We'll make use of
+In some cases
 [hexadecimal C-style notation](http://en.wikipedia.org/wiki/Hexadecimal#Using_0.E2.80.939_and_A.E2.80.93F)
-for a byte value: `\x00`, `\x01`, ..., `\xff`. So a sequence of 3 bytes with
-decimal values 10, 16, 254 will be written as `\x0a\x10\xfe`.
+will be used for a byte value: `\x00`, `\x01`, ..., `\xff`. So a sequence of 3
+bytes with decimal values 10, 16, 254 will be written as `\x0a\x10\xfe`. With
+such a notation, non-printable characters in a string are represented as well as
+byte-arrays.
 
 ## Basic terms
 
 ### Endianness
 
 An unsigned "short" 16-bit integer requires 2 bytes. E.g. since
-`1025 = 4 * 256 + 1` the number 1024 can be represented with 2 bytes with
+`1025 = 4 * 256 + 1` the number 1025 can be represented with 2 bytes with
 values: 4 and 1. But how exactly do we write them? Is it `\x04\x01` or
-`\x01\x04`? It occurs that both is possible and this is what
+`\x01\x04`? It occurs that both are possible and this is what
 [*Endianness*](http://en.wikipedia.org/wiki/Endianness) is all about. The first
 variant `\x04\x01` is called *big-endian*; it is used in Motorola 68000 and
 PowerPC and some network protocols. The second variant `\x01\x04` is called
@@ -53,29 +55,31 @@ operates on. And when data is sent over network it may be not in the native
 order, but rather in order dictated by the protocol. So your Intel Core i7
 processor will take the number `1025` as `\x01\x04` and reorder bytes to
 `\x04\x01` before using it for a Total Length field in IP datagram and sending
-it over Internet. As a side note, such order is specified by
+it over Internet. (As a side note, such order is specified by
 [RFC 791](http://tools.ietf.org/html/rfc791#page-39) from 1981, but not by
-earlier [RFC 760](http://tools.ietf.org/html/rfc760) from 1980.
+earlier [RFC 760](http://tools.ietf.org/html/rfc760) from 1980.)
 
-The very same ideas apply when working with larger number of bytes, like 32-bit
-or 64-bit integer.
+Similar ordering extends to larger types including 32-bit and 64-bit integers.
 
 ### Alignment
 
-Now, that we are mostly clear with primitive data types, let's talk about
-structs. While computer addresses bytes, the operations are usually performed
-on larger chunks. 64-bit processor natively summarize 8-byte numbers. SSE2
-instruction takes 128-bit as operands. Cache blocks can be 64-byte long. From
-all these examples it should be logical, that data should be optimized for
-such things. For a struct of 1-byte character and 2-byte "short" integer one
-may allocate 3 bytes. But those 3 bytes should play well with 4-byte memory
-access command. In particular if our struct is stored in array of such.
-So compiler *pad* 3-bytes to 4 by adding one non-meaningful byte. And similarly
-the "short" integer in struct will come to even memory address thus
-facilitating some operations.
+Let's move from primitive data types to structs. While computer addresses single
+bytes, the operations are usually performed on larger chunks. 64-bit processor
+natively adds 8-byte numbers. SSE2 instruction takes 128-bit as operands.
+[Cache](http://en.wikipedia.org/wiki/CPU_cache) blocks can be 64-byte long. From
+all these examples it should be logical, that data should be optimized for such
+things. For a struct of 1-byte character and 2-byte "short" integer three bytes
+are needed in total. But those 3 bytes should fit into 4-bytes chunk on which
+memory access commands operate. Two memory access commands will be required to
+load the entire struct of 3 bytes that cross 4-byte border. And this happens for
+array of 3-byte structs squeezed together.
 
-All these is called *alignment*. And this is the reason why bytes can appear
-in different locations in memory or in binary format.
+So compiler *pads* 3-bytes to 4 by adding one non-meaningful byte. And similarly
+the "short" integer in struct will come to even memory address thus facilitating
+other operations.
+
+All those actions are called *alignment*. And this is the reason why bytes can
+appear in "unexpected" locations in memory or in binary format.
 
 ### Character
 
