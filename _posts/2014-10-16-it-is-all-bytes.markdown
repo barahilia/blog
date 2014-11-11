@@ -128,14 +128,15 @@ Let's start from a simple program:
         return 0;
     }
 
-Compile it with `g++ -g 1.cpp` and hit debugger `gdb a.out` and execute:
+Compile it with `g++ -g 1.cpp`, hit the debugger `gdb a.out` and execute (note,
+I added comments to each line and tags to memory output):
 
-    (gdb) break 20          // set breakpoint at return statement
+    (gdb) break 12          // set breakpoint at return statement
     (gdb) start             // run the program, stop at main entrance
     (gdb) continue          // run to breakpoint
     (gdb) print &i          // print memory address of the first variable
     $5 = (int *) 0xbffff054
-    (gdb) x/24b 0xbffff050  // examine 24 bytes in memory starting at
+    (gdb) x/24b 0xbffff050  // examine 24 bytes in memory starting here
     0xbffff050:     -60   c:127    s:16-------0     i:1-------4-------0-------0
     0xbffff058:  d.c:65    -121       4       8  d.i:31-------0-------0-------0
 
@@ -157,26 +158,26 @@ From "bytes" perspective, Python 2.x is very similar to C. Default strings are
 also byte arrays. So one can read entire file with `s = open("file.ext").read()`
 and process it as ASCII string or as binary data. Python is however more limited
 in raw memory access. While in C every single byte is accessible with pointers,
-Python is closer to human kind. It has dedicated
-[struct](https://docs.python.org/2/library/struct.html) module packs and unpacks
-bytes. See for example:
+Python is closer to human kind. It has a dedicated
+[struct](https://docs.python.org/2/library/struct.html) module that packs and
+unpacks bytes. See for example:
 
     from struct import pack, unpack
 
-    p = pack("!ih", 65, 66)         # network order: integer, short
+    p = pack("!ih", 65, 66)         # ! = network order; i = integer; s = short
+    print repr(p)                   # string '\x00\x00\x00A\x00B'
     open('data.dat', 'w').write(p)
-    print repr(p)                   # '\x00\x00\x00A\x00B'
 
     s = open('data.dat').read()
     t = unpack("!ih", s)
     print t                         # (65, 66)
 
 Note, that we specified the byte order - network or big-endian, so that this
-file will gain the same results on all architectures. With the same ease, one
-may do byte manipulations with this module. E.g. split 32-bit integer to two
-16-bit shorts, just like in C.
+script will save in file "binary" same data on all architectures. With the same
+ease, one may do byte manipulations with this module. E.g. split 32-bit integer
+to two 16-bit shorts, just like in C.
 
-Python 2.x also provides `unicode` data type for Unicode strings. Given file:
+Python 2.x also provides a `unicode` data type for Unicode strings. Given file:
 
     aaa угу bbb
 
@@ -187,16 +188,16 @@ Python 2.x also provides `unicode` data type for Unicode strings. Given file:
     
     import codecs               # encoder/decoder
     u = codecs.open("text.txt", "r", "utf-8").read()
-    print repr(u)               # u'aaa \u0435\u043b\u044c bbb\n'
+    print repr(u)               # correct: u'aaa \u0435\u043b\u044c bbb\n'
 
 ### C\#
 
 C\# is a modern language. Being such it's fully aware of byte quirks and the
-difference between character and byte. The
+difference between the character and the byte. The
 [char](http://msdn.microsoft.com/en-us/library/x9h8tsay.aspx) data type
 explicitly represents a Unicode character. It is 16-bit long which is enough for
-most usages. So while we're working with data, we have to tell .NET plainly that
-bytes should be read or written:
+many applications. So while we're working with data, we have to tell .NET
+plainly when raw bytes should be read or written:
 
     public static void Main()
     {
@@ -215,22 +216,22 @@ bytes should be read or written:
         );
     }
 
-And what will happen if textual file is read into a string? Let's try:
+And what will happen if a textual file is read into a string? Let's try:
 
     public static void Main()
     {
-        string s = File.ReadAllText("text.txt");
+        string s = File.ReadAllText("text.txt"); // same file as in Python
         Console.WriteLine(s); // aaa угу bbb
     }
 
 [`File.ReadAllText()`](http://msdn.microsoft.com/en-us/library/ms143368(v=vs.110).aspx)
 automatically detects UTF-8 encoding and loads file content correctly. C\# makes
-clear distinction between the byte array the string.
+clear the distinction between the byte array the string.
 
 ## Bottom line
 
-All data is made of bytes. To build basic types as integer, struct or string one
-should be aware of *endianness*, *alignment* and *characters*. We understood how
-to operate on those concepts in three mainstream programming languages C++,
-Python and C\#.
+All data is made of bytes. Advanced operations with such basic types as integer,
+struct or require awareness of *endianness*, *alignment* and *characters*. We
+understood how to operate on those concepts in three mainstream programming
+languages: C++, Python and C\#.
 
