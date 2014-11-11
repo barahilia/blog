@@ -86,24 +86,25 @@ appear in "unexpected" locations in memory or in binary format.
 This is arguably the most difficult concept of all discussed here. Probably the
 reason is its illusory simplicity. Indeed, looking at `A` letter we know that it
 maps to decimal code `65`. Every even non-american keyboard has such a key and
-consoles knowns how to depict this letter from `65` code in memory or read from
-a file. Why to complicate simple things?
+console knows how to depict this letter from `65` code in memory or read from a
+file. Why to complicate simple things?
 
 And indeed mainstream computer languages before 90's did not make much deal of
 characters and used a byte for one and bytearray for strings. How do they call
 it - [ASCII](http://en.wikipedia.org/wiki/ASCII). But wait, ASCII encodes only
 128 characters, not 256 and you have other languages than English. Hmmm. Yes,
-now we mostly work with [Unicode](http://en.wikipedia.org/wiki/Unicode), which
-cover most alphabets and other symbols, latest versions more than 110,000. And
-this number is far beyond ability of one single byte.
+now we mostly work with [Unicode](http://en.wikipedia.org/wiki/Unicode). It
+covers most alphabets and other symbols; latest versions describe more than
+110,000 characters. And this number is far beyond the ability of one single
+byte.
 
 The story begins with the term *charset* - or code page, or charmap. It enlists
-characters in our domain and gives their numbers - encoding. Some characters,
-like `\n` end-of-line are functional and not printable. Others even not used in
-textual files at all. There are many extensions of ASCII encoding national
+characters in our domain and gives each of one a number. Some characters, like
+`\n` - end-of-line, are functional and not printable. Others does not appear in
+textual files at all. There are many extensions of ASCII encoding to national
 letters and symbols with numbers 128-255 giving perfect fit to one byte code.
-But in case of Unicode domain is significantly larger and in general 4 bytes are
-used. *Encodings* define how to save Unicode character in file.
+But, in case of Unicode, the domain is significantly larger and in general 4
+bytes are used. *Encodings* define how to save Unicode characters in a file.
 [UTF-8](http://en.wikipedia.org/wiki/UTF-8) is the dominant encoding in
 Internet.
 
