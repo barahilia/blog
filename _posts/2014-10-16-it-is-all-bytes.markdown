@@ -190,7 +190,7 @@ Python 2.x also provides a `unicode` data type for Unicode strings. Given file:
     u = codecs.open("text.txt", "r", "utf-8").read()
     print repr(u)               # correct: u'aaa \u0435\u043b\u044c bbb\n'
 
-### C\#
+### C# 
 
 C\# is a modern language. Being such it's fully aware of byte quirks and the
 difference between the character and the byte. The
