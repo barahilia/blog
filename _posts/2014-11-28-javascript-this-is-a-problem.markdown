@@ -44,6 +44,13 @@ You will need this knowledge to understand some patterns and find solutions in
 life situations. But such a complexity should raise a red flag: not for
 everything. Advanced tools should wait patiently on a shelf.
 
-
+So why usage of *this* in other languages, Java for example, is valid? Actually,
+the resemblance of *this* in JavaScript to the same concepts in other languages
+is deceptive. In Java, each object originates from a class and has a state. All
+object's members including functions are defined per class and when execute rely
+on state of an object on which they operate. In JavaScript, there are no classes
+and functions are objects of their own. Functions bear no link to the object in
+which they are defined, but can operate on any state. This isn't to make your
+life harder, but rather to allow for a very nice and powerful paradigm.
 
 
