@@ -41,7 +41,13 @@ in `that` variable, which in turn is captured by `count()` function.
 In JavaScript there are (at least) 4 methods to invoke a function that differ
 by how *this* is set.
 
-**TODO**: insert a list, reference to John Resig
+John Resig in the "Secrets of the JavaScript Ninja" makes a list of four (!)
+methods to invoke a function that differ by how this is set:
+
++ as a function, directly on current scope, *this* is the same as at environment
++ as a method, on an object, *this* equals to the object state
++ as a constructor, when new object is generated and *this* set to it
++ via `apply()` or `call()` methods, where *this* can be set to anything
 
 Just to be aware of them when you write your code is intimidating. And if you
 look around, a substantial volume of text in books and articles explain, how
