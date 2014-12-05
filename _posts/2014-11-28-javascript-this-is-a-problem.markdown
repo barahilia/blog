@@ -73,7 +73,22 @@ If you need just to create an object, prefer the simplest syntax:
     obj.a = 0;
     obj.count = function () { obj.a++; }
 
-You need a constructor - wrap code above in a function:
+Some textbooks and libraries define all object members inside curly brackets:
+
+    var obj = {
+        a: 0,
+        count: function () {
+            obj.a++;
+        }
+    };
+
+I do use such a syntax for the simplest and shortest definitions only. On the
+one hand, defining `count()` inside `obj` adds one level of indentation. On the
+other, for larger objects the opening line might be left far above and it would
+be easier to grasp `obj.count` than `count: ...` with hidden `obj =`. Both
+aspects harm readability so I opt for the former construct.
+
+You need a constructor - wrap object definition in a function:
 
     var createObj = function () {
         var obj = {};
@@ -91,9 +106,9 @@ another to return it. Now, what do we gain:
 * No need to capture the state of object (actually it's done with `var obj`)
 * No chance for missing `new` like with the constructor syntax
 
-Here I introduced a private member through captured local variable. It isn't
+Here I introduced a private member through captured local variable. It is not
 counted to advantages of this method, since this trick can be used inside
 constructors. But probably there it "feels" less correct: members should be
-defined through *this*, shoulnd't they?
+defined through *this*, shouldn't they?
 
 
