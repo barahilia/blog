@@ -77,7 +77,7 @@ If you need just to create an object, prefer the simplest syntax:
     obj.a = 0;
     obj.count = function () { obj.a++; }
 
-Some textbooks and libraries define all object members inside curly brackets:
+Some textbooks and libraries define all object members within curly brackets:
 
     var obj = {
         a: 0,
@@ -92,7 +92,7 @@ objects the opening line might be left far above and it would
 be easier for code observer to grasp `obj.count` than `count: ...` with the
 hidden `obj =`. Both aspects harm readability so I opt to the former construct.
 
-You need a constructor - wrap object definition in a function:
+If a constructor is needed just wrap object definition in a function:
 
     var createObj = function () {
         var obj = {};
@@ -102,17 +102,20 @@ You need a constructor - wrap object definition in a function:
         return obj;
     };
 
-Note that overhead is just two more statements: one to declare the object and
-another to return it. Now, what do we gain:
+Note that the overhead is just two more statements: one to declare the object
+and another to return it. Now, what do we gain:
 
 * Very simple syntax, that even novice may write and use correctly
 * Guaranteed same result under any invocation type
 * No need to capture the state of object (actually it's done with `var obj`)
 * No chance for missing `new` like with the constructor syntax
 
-Here I introduced a private member through captured local variable. It is not
-counted to advantages of this method, since this trick can be used inside
-constructors. But probably there it "feels" less correct: members should be
-defined through *this*, shouldn't they?
+In `createObj` I introduced a private member through captured local variable. It
+cannot be counted to the advantages of this method, since the same trick can be
+used with usual constructors. But probably there it "feels" less correct:
+members should be defined through *this*, shouldn't they?
+
+In conclusion: please do use *this* in your code. Just know the risks and make a
+decision if *this* is really needed.
 
 
