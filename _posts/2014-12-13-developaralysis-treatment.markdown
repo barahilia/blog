@@ -49,4 +49,33 @@ into packages and track their dependencies
 good and the bad fast enough and you may stop at the first appropriate good
 station
 
+Take a developer experienced with Java that
+by bad chance must start working in C\#. Oh crap! He was used to write
+`System.out.println("hi")` but now he learns `Console.WriteLine("hi")`. And the
+old good looping `for (String s : arr)` becomes unclear `foreach (var s in arr)`.
+And he even didn't really start to harness standard libraries. And yes, good
+programmers write tests first so we should go and learn `nUnit` after nice and
+simple `jUnit` that he is accustomed to. Dummy `Assert.AreEqual(1+2, 3)` instead
+of normal and clear `assertEquals("1+2=3", 1+2, 3)`.
+
+By now you might be laughing to yourself, or calling this rubbish. So I'll
+continue to my point. Yes, I brought those examples to show, that essentially,
+both C\# and Java are not so intrinsically different. They are two languages
+both in their own rights, with mostly not intersecting communities. But still
+for one coming from Java it'll not take the same to be effective in C\# as for
+those coming from no background at all. Or will it? Alice - sorry for bringing
+security names here - is an good learner. When she first met unit tests in her
+life, she was astonished, and started learning and experimenting what this is
+about. And she quickly understood that there are a couple of well known players
+in that field: suites, tests, asserts. Probably later she got to "system under
+test", starting up and tearing down procedures. Bob is quite different. He's
+renowned sprinter, accomplishing first most tasks. He quickly and efficiently
+searches the Internet, copies and adapts relevant code parts, uses libraries
+and finds well-hidden functions that boost his productivity. He don't stop to
+contemplate over how things are done, what is the theory. He looks at examples
+and quickly learns that in most of them there are suites, tests and asserts and
+when the need arises, he comes to start up and tear down things.
+
+
+
 
