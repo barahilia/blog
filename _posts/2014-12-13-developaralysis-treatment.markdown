@@ -84,6 +84,11 @@ To Alice a miracle happens. After short time making herself accustomed to new
 code samples she knows how to continue. And that she does at almost the same
 pace as it was before. Yes she still stops from time to time to debug a strange
 mystery. And behavior is not exactly the same. But... all the underlying
-concepts learnt previously work here too!
+concepts learned previously work here too!
+
+Why so? Both Alice and Bob are hard workers, but while Bob advances faster and
+knows more syntax and tricks, Alice is much better prepared for novelty. Bot
+gone in breadth covering much of shallow waters and Alice dived in depth, one
+at a time. 
 
 
