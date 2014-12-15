@@ -76,6 +76,14 @@ contemplate over how things are done, what is the theory. He looks at examples
 and quickly learns that in most of them there are suites, tests and asserts and
 when the need arises, he comes to start up and tear down things.
 
-
+Both Alice and Bob now should start again with a new language or a new unit test
+library. How they perceive the change? Bob continues on the same pace with old
+proven techniques. Look up in Internet, copy from documentation. He feels sorry
+for all time spent previously and blames his bad luck on the change in course.
+To Alice a miracle happens. After short time making herself accustomed to new
+code samples she knows how to continue. And that she does at almost the same
+pace as it was before. Yes she still stops from time to time to debug a strange
+mystery. And behavior is not exactly the same. But... all the underlying
+concepts learnt previously work here too!
 
 
