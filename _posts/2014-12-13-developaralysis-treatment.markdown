@@ -82,13 +82,59 @@ proven techniques. Look up in Internet, copy from documentation. He feels sorry
 for all time spent previously and blames his bad luck on the change in course.
 To Alice a miracle happens. After short time making herself accustomed to new
 code samples she knows how to continue. And that she does at almost the same
-pace as it was before. Yes she still stops from time to time to debug a strange
+pace as it was before. Yes, she still stops from time to time to debug a strange
 mystery. And behavior is not exactly the same. But... all the underlying
-concepts learned previously work here too!
+concepts learned previously can be applied here too!
 
-Why so? Both Alice and Bob are hard workers, but while Bob advances faster and
-knows more syntax and tricks, Alice is much better prepared for novelty. Bot
-gone in breadth covering much of shallow waters and Alice dived in depth, one
-at a time. 
+Why so? Both guys are hard workers, but while Bob advances faster and knows more
+syntax and tricks, Alice is much better prepared for novelty. Bob gone in
+breadth covering much of shallow waters and Alice dived in depth, one at a time. 
+It's a choice if to recognize every new function and situation as unique and
+standing alone, or to attempt generalizing and categorizing. Well, general
+ideas, solutions and concepts are not always good and appropriate. Almost each
+case of optimization and customization requires specific approach. Latest CPU
+instructions are adopted, bits are squeezed, and
+[graphical co-processor](http://en.wikipedia.org/wiki/General-purpose_computing_on_graphics_processing_units)
+involved. But for covering more ground there's no other way then standard things
+coming in well defined categories.
+
+Take the same unit test libraries. In almost each modern one, you'll find
+suites, tests and asserts allowing to check equality, compare numbers and
+arrays. Just reading the previous sentence won't make one an expert. Concepts
+and ideas require time to understand. The first time you write test you
+probably won't recognize the idea. It will take dozens of them, and probably
+two or three different frameworks probably in a couple of languages to reveal
+the pattern. Text books can speed you up, but without experience and search for
+solutions to real problems, it won't help to real deep understanding. It is
+pretty fast to start copying code samples and even juggling with them a little.
+Nevertheless it
+[takes 10 long years to teach yourself programming](http://norvig.com/21-days.html).
+
+My first source control system was Subversion. No, sorry, my first source
+control system was copy-paste and manual backups to
+[diskettes](http://en.wikipedia.org/wiki/Floppy_disk). I was first introduced to
+Subversion and after some demonstrations and explanations got to it. Then later
+the company moved to Mercurial and it was quite simple. Well, there's difference
+between client-server where each commit goes directly to the center and the
+distributed system where you commit locally and sync later. But it's not so
+large and doesn't interfere with most daily tasks. Now, I work with Git at
+GitHub and again, the basic transition happened pretty fast. I still tend to
+disagree with conclusion from
+[Mercurial vs Git; it’s all in the branches](https://felipec.wordpress.com/2011/01/16/mercurial-vs-git-its-all-in-the-branches/)
+- Mercurial feels better adjusted for simple needs and Git feels stronger, more
+powerful and harder to understand. But again, the general concepts of
+working directory, commits, merges and sync - are the same. Yes, advanced tasks
+require thorough understanding of specific details. But such occasions are less
+frequent then simple ones.
+
+Look at any aspect of Computer Engineering: programming languages, libraries and
+frameworks, tools, designs... It is a vast and rapidly evolving area, but the
+most basic ideas are few. You need to gain experience and deep understanding,
+but once they are acquired, you will see the pattern and will recognize them.
+All of a sudden C++ programmer starts reading Haskell and JavaScript guru sees
+sense in Lisp. Huge domain looks unapproachable to a fresh college graduate. And
+in 2-3 years she might become bored by similarities everywhere. Given, she goes
+in depth and tries to learn and understand how things work and why they become
+as they are.
 
 
