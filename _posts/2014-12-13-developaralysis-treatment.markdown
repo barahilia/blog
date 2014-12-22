@@ -32,14 +32,14 @@ is:
 * learn in depth than in breadth
 * respect good enough solutions
 
-Take a developer experienced with Java that
-by bad chance must start working in C\#. Oh crap! He was used to write
-`System.out.println("hi")` but now he learns `Console.WriteLine("hi")`. And the
-old good looping `for (String s : arr)` becomes unclear `foreach (var s in arr)`.
-And he even didn't really start to harness standard libraries. And yes, good
-programmers write tests first so we should go and learn `nUnit` after nice and
-simple `jUnit` that he is accustomed to. Dummy `Assert.AreEqual(1+2, 3)` instead
-of normal and clear `assertEquals("1+2=3", 1+2, 3)`.
+Take a developer experienced with Java that by bad chance must start working in
+C\#. Oh crap! He was used to write `System.out.println("hi")` but now he learns
+`Console.WriteLine("hi")`. And the old good looping `for (String s : arr)`
+becomes unclear `foreach (var s in arr)`. And he even didn't really start to
+harness standard libraries. And yes, good programmers write tests first so we
+should go and learn `nUnit` after nice and simple `jUnit` that he is accustomed
+to. Dummy `Assert.AreEqual(1+2, 3)` instead of normal and clear
+`assertEquals("1+2=3", 1+2, 3)`.
 
 By now you might be laughing to yourself, or calling this rubbish. So I'll
 continue to my point. Yes, I brought those examples to show, that essentially,
