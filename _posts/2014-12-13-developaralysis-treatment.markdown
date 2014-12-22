@@ -131,10 +131,49 @@ Look at any aspect of Computer Engineering: programming languages, libraries and
 frameworks, tools, designs... It is a vast and rapidly evolving area, but the
 most basic ideas are few. You need to gain experience and deep understanding,
 but once they are acquired, you will see the pattern and will recognize them.
-All of a sudden C++ programmer starts reading Haskell and JavaScript guru sees
+All of a sudden C++ programmer starts reading Haskell and a JavaScript guru sees
 sense in Lisp. Huge domain looks unapproachable to a fresh college graduate. And
 in 2-3 years she might become bored by similarities everywhere. Given, she goes
 in depth and tries to learn and understand how things work and why they become
 as they are.
+
+Another problem arises: here and now we should choose a GUI toolkit. Wikipedia
+happily provides
+[a couple of dozens of them](http://en.wikipedia.org/wiki/List_of_widget_toolkits).
+Which one is the best? Again, after some experience in such choices, it's clear
+that the question needs clarifications. Do we want something general or
+dedicated, what is the operational system and intended language, are we seeking
+anything popular or ... And so on. Finally, dozens easily shrinks to a smaller
+number and then, after all foreseeable requirements are met, all of remaining
+toolkits will do. Probably, it won't be perfect, but, since it fits all demands,
+it will be good enough. After you gain some experience with this choice, you'll
+probably understand better if you like it or not and for what reason. And then
+other contestants can be reviewed and evaluated against that reason. The
+important lesson is: you haven't learn all toolkits to continue with that one.
+You should feel where to stop.
+
+By the way, same idea applies to learning. Not everything should be taken in one
+gigantic step. Some trait can be left aside. In learning too there's good enough
+point after which best to pursue with bringing value and developing a feature.
+Let's say a novice C++ programmer sees:
+
+    ifstream input("text.txt");
+    string str(
+        (istreambuf_iterator<char>(input)),
+        istreambuf_iterator<char>()
+    );
+
+It might be relatively simply to grok that in both statements a constructor
+function is called. But what is iterator, is there any meaning to the
+parenthesis in which the argument is enclosed, what it does and how does it
+work? Some answers might and can be answered pretty fast. Others may be less
+obvious and probably should wait for another time. And this is OK. The
+understanding should also be good enough, not perfect. Don't rush to drink it
+all in one gulp.
+
+So this is the Developaralysis treatment - learn the things you do in depth and
+seek for a good point to stop. Neither advice is simple, both takes much time
+and consideration. You career is in your hands. It's up to you to choose if to
+feel overwhelmed or to invest the time and understand.
 
 
