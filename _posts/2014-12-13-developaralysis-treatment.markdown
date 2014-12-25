@@ -99,7 +99,7 @@ My first source control system was Subversion. No, sorry, my first source
 control system was copy-paste and manual backups to
 [diskettes](http://en.wikipedia.org/wiki/Floppy_disk). I was first introduced to
 Subversion much later and after some demonstrations and explanations got used to
-it. Then later the company moved to Mercurial and the change came quite simple.
+it. Then the company moved to Mercurial and the change came quite simple.
 Well, there's difference between the client-server, where each commit goes
 directly to the center, and the distributed system where you commit locally and
 sync later. But it's not so large and doesn't interfere with most daily tasks.
