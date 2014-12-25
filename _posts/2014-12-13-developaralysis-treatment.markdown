@@ -5,7 +5,7 @@ date:   2014-12-13 21:40:00
 categories: computers
 ---
 
-Today I've read an article
+Some time ago I read an article
 [You Too May Be A Victim Of Developaralysis](http://techcrunch.com/2014/10/18/you-too-may-be-a-victim-of-developaralysis/).
 The text caused me to think about some usual and established things in a new
 light. With the evidence of beyond ten thousands likes and tweets, many others
@@ -26,14 +26,14 @@ most modern undertakings, let's start with Wikipedia:
 
 Humor aside. With profession, nothing comes as easy as cure to flu. And if all
 you want is to take a rest and paracetamol, then better forget about software.
-The real treatment is really simple to write, but very difficult to apply. It
+The real treatment is really simple to describe, but very difficult to apply. It
 is:
 
-* learn in depth than in breadth
+* learn in depth rather than in breadth
 * respect good enough solutions
 
 Take a developer experienced with Java that by bad chance must start working in
-C\#. Oh crap! He was used to write `System.out.println("hi")` but now he learns
+C\#. Oh, crap! He is used to write `System.out.println("hi")` but now he learns
 `Console.WriteLine("hi")`. And the old good looping `for (String s : arr)`
 becomes unclear `foreach (var s in arr)`. And he even didn't really start to
 harness standard libraries. And yes, good programmers write tests first so we
@@ -41,23 +41,25 @@ should go and learn `nUnit` after nice and simple `jUnit` that he is accustomed
 to. Dummy `Assert.AreEqual(1+2, 3)` instead of normal and clear
 `assertEquals("1+2=3", 1+2, 3)`.
 
-By now you might be laughing to yourself, or calling this rubbish. So I'll
-continue to my point. Yes, I brought those examples to show, that essentially,
-both C\# and Java are not so intrinsically different. They are two languages
+By now you might be laughing to yourself, or calling this rubbish. A good time
+to get to the point. Yes, I brought those examples to show, that essentially,
+both C\# and Java are not so intrinsically different. They are two languages,
 both in their own rights, with mostly not intersecting communities. But still
-for one coming from Java it'll not take the same to be effective in C\# as for
-those coming from no background at all. Or will it? Alice - sorry for bringing
-security names here - is an good learner. When she first met unit tests in her
-life, she was astonished, and started learning and experimenting what this is
-about. And she quickly understood that there are a couple of well known players
-in that field: suites, tests, asserts. Probably later she got to "system under
-test", starting up and tearing down procedures. Bob is quite different. He's
-renowned sprinter, accomplishing first most tasks. He quickly and efficiently
-searches the Internet, copies and adapts relevant code parts, uses libraries
-and finds well-hidden functions that boost his productivity. He don't stop to
-contemplate over how things are done, what is the theory. He looks at examples
-and quickly learns that in most of them there are suites, tests and asserts and
-when the need arises, he comes to start up and tear down things.
+those coming from Java background will become effective in C\# way sooner than
+those coming from no background at all. Or will they?
+
+Alice - sorry for bringing security names here - is a good learner. When she
+first met unit tests in her life, she was astonished, and started learning about
+and experimenting with them. And she quickly got acquainted with a couple of
+well known players in that field: suites, tests, asserts. Probably later she
+came to "system under test", starting up and tearing down procedures. Bob is
+quite different. He is a renowned sprinter, being the first to accomplish most
+tasks. He quickly and efficiently searches the Internet, copies and adapts
+relevant code parts, uses libraries and finds well-hidden functions that boost
+his productivity. He don't stop to contemplate over how things are done
+internally, what is the theory. He looks at examples and mimics commands for
+suites, tests and asserts and when the need arises, he comes to start up and
+tear down things. Everything works, tests are in place - let's move on.
 
 Both Alice and Bob now should start again with a new language or a new unit test
 library. How they perceive the change? Bob continues on the same pace with old
@@ -81,64 +83,65 @@ instructions are adopted, bits are squeezed, and
 involved. But for covering more ground there's no other way then standard things
 coming in well defined categories.
 
-Take the same unit test libraries. In almost each modern one, you'll find
+Take the same unit test libraries. In almost each modern framework, you'll find
 suites, tests and asserts allowing to check equality, compare numbers and
 arrays. Just reading the previous sentence won't make one an expert. Concepts
 and ideas require time to understand. The first time you write test you
 probably won't recognize the idea. It will take dozens of them, and probably
 two or three different frameworks probably in a couple of languages to reveal
 the pattern. Text books can speed you up, but without experience and search for
-solutions to real problems, it won't help to real deep understanding. It is
-pretty fast to start copying code samples and even juggling with them a little.
+solutions to real problems, you won't come to deep understanding. It is pretty
+fast to start copying code samples and even juggling with them a little.
 Nevertheless it
 [takes 10 long years to teach yourself programming](http://norvig.com/21-days.html).
 
 My first source control system was Subversion. No, sorry, my first source
 control system was copy-paste and manual backups to
 [diskettes](http://en.wikipedia.org/wiki/Floppy_disk). I was first introduced to
-Subversion and after some demonstrations and explanations got to it. Then later
-the company moved to Mercurial and it was quite simple. Well, there's difference
-between client-server where each commit goes directly to the center and the
-distributed system where you commit locally and sync later. But it's not so
-large and doesn't interfere with most daily tasks. Now, I work with Git at
-GitHub and again, the basic transition happened pretty fast. I still tend to
-disagree with conclusion from
-[Mercurial vs Git; it’s all in the branches](https://felipec.wordpress.com/2011/01/16/mercurial-vs-git-its-all-in-the-branches/)
+Subversion much later and after some demonstrations and explanations got used to
+it. Then later the company moved to Mercurial and the change came quite simple.
+Well, there's difference between the client-server, where each commit goes
+directly to the center, and the distributed system where you commit locally and
+sync later. But it's not so large and doesn't interfere with most daily tasks.
+Now, I work with Git at GitHub and again, the basic transition was moderately
+fast and easy. I still tend to disagree with the conclusion from
+["Mercurial vs Git; it’s all in the branches"](https://felipec.wordpress.com/2011/01/16/mercurial-vs-git-its-all-in-the-branches/)
 - Mercurial feels better adjusted for simple needs and Git feels stronger, more
-powerful and harder to understand. But again, the general concepts of
-working directory, commits, merges and sync - are the same. Yes, advanced tasks
-require thorough understanding of specific details. But such occasions are less
-frequent then simple ones.
+powerful and harder to understand. However the general concepts of working
+directory, commits, merges and sync - are the same. Yes, advanced tasks require
+thorough understanding of specific details. But such occasions are less
+frequent.
 
 Look at any aspect of Computer Engineering: programming languages, libraries and
-frameworks, tools, designs... It is a vast and rapidly evolving area, but the
+frameworks, tools, designs... It is a vast and rapidly evolving area, yet the
 most basic ideas are few. You need to gain experience and deep understanding,
 but once they are acquired, you will see the pattern and will recognize them.
 All of a sudden C++ programmer starts reading Haskell and a JavaScript guru sees
-sense in Lisp. Huge domain looks unapproachable to a fresh college graduate. And
-in 2-3 years she might become bored by similarities everywhere. Given, she goes
-in depth and tries to learn and understand how things work and why they become
+sense in Lisp. Huge domain looks unapproachable to a fresh college graduate. In
+2-3 years she might become bored by similarities everywhere. Given, she goes in
+depth and tries to learn and understand how things work and why they become
 as they are.
 
 Another problem arises: here and now we should choose a GUI toolkit. Wikipedia
 happily provides
 [a couple of dozens of them](http://en.wikipedia.org/wiki/List_of_widget_toolkits).
 Which one is the best? Again, after some experience in such choices, it's clear
-that the question needs clarifications. Do we want something general or
+that the question needs clarification. Do we want something general or
 dedicated, what is the operational system and intended language, are we seeking
 anything popular or ... And so on. Finally, dozens easily shrinks to a smaller
-number and then, after all foreseeable requirements are met, all of remaining
-toolkits will do. Probably, it won't be perfect, but, since it fits all demands,
-it will be good enough. After you gain some experience with this choice, you'll
-probably understand better if you like it or not and for what reason. And then
-other contestants can be reviewed and evaluated against that reason. The
-important lesson is: you haven't learn all toolkits to continue with that one.
-You should feel where to stop.
+number and then, after all foreseeable requirements are met, any of remaining
+toolkits will do and it doesn't really matter whatever you chose. Probably, it
+won't be perfect, but, since it fits all the demands, it will be good enough.
+After you gain some experience with this tool, you'll probably understand better
+if you like it or not and for what reason. And then other contestants can be
+reviewed and evaluated against that reason. The important lesson is: you haven't
+learn all the toolkits to take and make use of one. You should feel where to
+stop.
 
 By the way, same idea applies to learning. Not everything should be taken in one
-gigantic step. Some trait can be left aside. In learning too there's good enough
-point after which best to pursue with bringing value and developing a feature.
-Let's say a novice C++ programmer sees:
+gigantic gulp. Some trait can be left aside. In learning there's a good enough
+point after which it would be best to pursue with bringing value and developing
+a feature. Let's say a novice C++ programmer sees:
 
     ifstream input("text.txt");
     string str(
@@ -149,14 +152,14 @@ Let's say a novice C++ programmer sees:
 It might be relatively simply to grok that in both statements a constructor
 function is called. But what is iterator, is there any meaning to the
 parenthesis in which the argument is enclosed, what it does and how does it
-work? Some answers might and can be answered pretty fast. Others may be less
-obvious and probably should wait for another time. And this is OK. The
-understanding should also be good enough, not perfect. Don't rush to drink it
-all in one gulp.
+work? Some questions might and can be answered pretty fast. Other are less
+obvious and probably should wait for another lesson. And this is OK. The
+understanding should also be good enough, not perfect. Don't rush to become a
+master in one day.
 
 So this is the Developaralysis treatment - learn the things you do in depth and
 seek for a good point to stop. Neither advice is simple, both takes much time
-and consideration. You career is in your hands. It's up to you to choose if to
-feel overwhelmed or to invest the time and understand.
+and consideration. Your career is in your hands. It's up to you to decide if to
+feel overwhelmed or to invest the time and come to few roots.
 
 
