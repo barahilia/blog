@@ -1,0 +1,310 @@
+---
+layout: post
+title:  "DSL"
+date:   2016-12-07 19:52:00
+categories: computers
+---
+
+## What and why
+
+Domain-specific languages (DSL) or mini-languages exist from the dawn of
+programming. Arguably one of the earliest examples is Fortran which was
+conceived in particular for "...easier entry of equations into a computer..." to
+quote [Wikipedia](https://en.wikipedia.org/wiki/Fortran). Another renowned
+family member is SQL - a language for queries and managing data in tables.
+Many other DSLs have been developed and serve us to this day. They also provide
+live examples of what domain-specific code can look like and achieve. In
+addition there are plenty of parsing libraries that are ready to handle
+an existing or a brand new language. A lot of book chapters, posts and articles
+has been written about usefulness and appropriate applications for DSL.
+
+In due time you clearly see: yes, here mini-language is the answer, it should be
+designed and used! With vast number of resources and such a highly-developed
+infrastructure this should be an easy thing to do. But, halt for a second, think
+about that. How the new language should read and write? How to integrate it with
+the existing parts? What caveats to look at and what are the best practices?
+Those are very practical questions and to my astonishment in wealth of
+information about DSL there are few answers. In the next sections we shall see
+how those questions can be answered.
+
+But before we begin, here are some of the best of the discovered references:
+
+1. [Design Guidelines for Domain Specific Languages](https://arxiv.org/abs/1409.2378) -
+the paper provides guidelines and best practices together with clear rationale
+1. [So You Want To Write Your Own Language?](http://www.drdobbs.com/architecture-and-design/so-you-want-to-write-your-own-language/240165488) -
+piece of advice from the creator of the D programming language, talking about
+general-purpose languages, and relevant for DSL nevertheless
+1. [DSL development: 7 recommendations for Domain Specific Language design based on Domain-Driven Design](http://www.theenterprisearchitect.eu/blog/2009/05/06/dsl-development-7-recommendations-for-domain-specific-language-design-based-on-domain-driven-design/) -
+pretty good outline of the process and some classification
+1. [WebDSL: A Case Study in Domain-Specific Language Engineering](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.151.5520&rep=rep1&type=pdf) - quite long
+academical technical report
+
+## Task for example
+
+Imagine a brand new mobile game called "Escape Town". The goal is to visit
+different places and search for keys. Players physically move from one spot to
+another and look for virtual keys in a Pokemon-like fashion on their mobiles.
+Current version of the game has a number of hard-coded quests and for the next
+release we want an easy way to add and edit quests by not programmers. Editors
+would prefer some natural way of writing. And in the future, probably the users
+themselves will define the levels, who knows. The task is: *allow the game
+engine initialization layer to be written in a simple language*.
+
+## Step zero: forget about DSL
+
+This is in particular important for the first timers. Not your first time, ah?
+Then you already have your own experience and know the true way :).
+
+Chances are, at the very beginning you do not really imagine how the code base
+will look like after the change. And even less clear which part exactly should
+be extracted. And to do that together with new language design is quite a
+burden. But what if... Yeah, JSON or CSV or YAML or INI or any other generic
+data language fully supported by your framework can do the job. So put the DSL
+ideas aside for a while, try to extract some small portion of those quests
+definitions from the code into a JSON string and add a converter from that JSON
+into current data objects. Apparently some refactoring will be needed and also
+integration of the new concepts into the existing layer of initialization. Make
+sure the entire project works as before and all the tests pass. We have advanced
+towards an end-to-end working state where definitions can appear externally.
+Next we may extract another portion and move it to JSON string which by now
+might be better put into a stand alone (resource) file. What have we achieved:
+
+- The code base is ready to accept definitions from data, some required
+refactoring is done, relevant layers of code prepared and separated.
+- JSON schema presents the domain concepts, that can soon be translated to DSL.
+- JSON file demonstrates example for how the definitions may look like. And
+this can be an argument for moving to more concise and expressive DSL. Or on
+the contrary, JSON representation might look just good enough, which means DSL
+simply is not needed. I once wrote a 200 lines long JSON file that later fit
+into 15 lines of nice and readable DSL. But it wasn't clear from the beginning
+that would be the case.
+- A converter is ready from JSON string to the data objects. At first steps it
+is easier to parse DSL and generate JSON instead of final data objects.
+
+## Step one: choose a parsing library
+
+In this task there are no restrictions on the syntax and we can first choose a
+library and then design the language in a way the library can parse it. It is in
+our best interest for the library to be small, easy to understand and convenient
+to use. A lot of parsers follow the archetype of lex & yacc: tokenize input and
+then build up syntactic structures. Another approach is based on PEGs - parsing
+expression grammars that generate parse tree according to a BNF-like
+description. In my opinion, the ability to describe the grammar in a textual
+form and stand-alone file, is an advantage. The alternative is grammar
+definition with the library functions and classes - is usually less readable.
+
+Recently I had a project in Python and I chose
+[`parsimonious`](https://pypi.python.org/pypi/parsimonious). It is recommended
+by several users, it is very concise, documented in a single page and also gives
+very clear error messages (which is spoiled by optionals as I discovered later).
+I also discovered two points, where the library might have done a better job:
+one is token separators by whitespace and comments and the other is parse tree
+node's children whose names can be inferred directly from the grammar.
+
+For separators, the library author recommends defining the `_` rule and put it
+between any two terms:
+
+```
+_ = ( comment / space )*
+comment = ~r"#[^\r\n]*"
+space = ~r"\s"
+```
+
+For node's children, I decided using the following verificator to ensure the
+grammar and the parser code are in sync:
+
+```python
+def verify_node(node, *verifications):
+    """Usage: verify_node(node, (0, 'word'), (1, '', ','))"""
+    for verification in verifications:
+        index, expr_name = verification[:2]
+        child = node.children[index]
+        assert child.expr_name == expr_name
+
+        if len(verification) > 2:
+            text, = verification[2:]
+            assert child.text == text
+```
+
+We will see below how both are used.
+
+## Step two: create the language
+
+Our initial design should support only a simplest definition though it should
+be large enough for experimentation and give general impression how the next
+parts will look like. In our case we aim at non-programmers and less technical
+users so let's make the statements verbose. Possibly like this:
+
+```
+find SECRET_UNICORN_KEY start at Lincoln 32 look for Hotel
+```
+
+This resembles a normal English sentence, is readable by anyone. And it is well
+structured and hence easy for parser to analyze. And also it has a number of
+natural expansion points that will be discovered soon.
+
+How the code will work? "Remember" the JSON from step zero? It comes handy now
+and allows for a short unit test. Here we define the interface, and the desired
+result:
+
+```python
+from unittest import TestCase
+
+class TestParser(TestCase):
+    def test_text(self):
+        s = 'find A start at b 1 look for c'
+        node = grammar.parse(s)
+
+        self.assertEqual(
+            node_to_text(node),
+            {'name': 'A', 'start': {'street': 'b', 'number': 1}, 'look': 'c'}
+        )
+```
+
+By the way, above JSON is built of native Python objects. Now we can write the
+grammar for the text above. In `parsimonious` it will be:
+
+```
+# quest.grammar
+text = find_stmt
+
+find_stmt = "find" _ word _ start _ look
+start = "start" _ "at" _ word _ number
+look = "look" _ "for" _ word
+
+word = ~r"[a-zA-Z_]+"
+number = ~r"\d+"
+
+# add the _ rule from above
+```
+
+Note the usage of the `_` rule. It allows separation between the terms, newline
+can be inserted at any point and comments can appear in between. Now prepare the
+parser:
+
+```python
+from parsimonious.grammar import Grammar
+grammar = Grammar(open('quest.grammar').read())
+```
+
+And finally convert the parse tree to the target JSON. Note the usage of
+`verify_node()`: it both documents the local node structure and keeps the
+converter function in sync with the grammar.
+
+```python
+def node_to_look(node):
+    verify_node(node, (0, '', 'look'), (2, '', 'for'), (4, 'word'))
+    place = node.children[4].text
+    return place
+
+def node_to_start(node):
+    verify_node(node, (0, '', 'start'), (2, '', 'at'), (4, 'word'),
+                      (6, 'number'))
+    street = node.children[4].text
+    number = int(node.children[6].text)
+    return {'street': street, 'number': number}
+
+def node_to_find_stmt(node):
+    verify_node(node, (0, '', 'find'), (2, 'word'), (4, 'start'),
+                      (6, 'look'))
+    name = node.children[2].text
+    start = node_to_start(node.children[4])
+    look = node_to_look(node.children[6])
+    return {'name': name, 'start': start, 'look': look}
+
+def node_to_text(node):
+    verify_node(node, (0, 'find_stmt'))
+    return node_to_find_stmt(node.children[0])
+```
+
+## Step three: iterate and add complexity
+
+After the most basic and simple configuration is parsable and executable end to
+end it's possible to expand the language. First, let's support more than one
+statement. The `text` rule is replaced with:
+
+```
+text = _ find_stmt_list _
+find_stmt_list = ( find_stmt _ ";" )*
+```
+
+Here we borrow the C-family semicolon `;` to separate between the statements.
+Parser doesn't really need it. This is a redundancy that may add to readability
+and on the way allow for the better error messages. Notice that the only change
+in converter is at the `node_to_text()` function:
+
+```python
+def node_to_find_stmt_list(node):
+    for child in node.children[1]:
+        verify_node(child, (0, 'find_stmt'), (2, '', ';'))
+        yield node_to_find_stmt(child)
+
+def node_to_text(node):
+    verify_node(node, (1, 'find_stmt_list'))
+    return list(node_to_find_stmt_list(node.children[1]))
+```
+
+Actually unit tests are affected too, but here comes handy one feature of
+`parsimonious`: parse a string with any rule. So we can simply rewrite:
+
+```python
+def test_find_stmt(self):
+    s = 'find A start at b 1 look for c'
+    node = grammar('find_stmt').parse(s)
+    # ...
+```
+
+Now that we support multiple statements it appears that some quests can start at
+multiple addresses. Why not to introduce arrays or Python-like lists. The
+`start` clause may read:
+
+```
+start at [ Lincoln 32 , Kennedy 17 , Gray 6 ]
+```
+
+The grammar to support this:
+
+```
+start = "start" _ "at" _ address_list
+address_list = "[" _ address _ ( "," _ address _ ) * "]"
+address = word _ number
+```
+
+Our configuration is quite rich by now. But what if the editor wants the quest
+to start at roads intersection? Easy enough to arrange this too!
+
+```
+start at [Lincoln and Kennedy intersection]
+```
+
+Accompanied with the `address` rule update:
+
+```
+address = house_address / intersection_address
+house_address = word _ number
+intersection_address = word _ "and" _ word _ "intersection"
+```
+
+Now just add a unit test and a couple of converter functions and that is it!
+
+## Final words
+
+To summarize, we have seen how the ground was prepared, initial version of the
+language suggested and put into code. Then expansions were made in three
+directions: multiple statements, multiple starting points and different options
+for expression (address) definition. We have developed a *configuration*
+language, and the process and the concepts for other purposes may differ.
+
+In any event it is both important and useful to experiment and try different
+approaches and solutions. Users should be involved in the process. They may
+complain non-intuitive and clumsy structures or suggest ideas. Just be aware,
+that once the users get excited about possibilities you create, new language
+features will be requested, which may lead to over-engineering. Remember: once
+the language becomes new C++, the users themselves will keep forgetting how to
+use it correctly. Instead of adding new features and grammar constructs seek
+reusing the existing ones.
+
+DSL is fun as it deals with the known domain concepts and hides the complexity
+of the real code doing the job behind the scene. Non-programmers may look at the
+text and understand what's going on and even write it themselves. Which makes
+you, the developer, feel like creator for the language and for the fun.
