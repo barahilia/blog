@@ -105,8 +105,8 @@ directly to the center, and the distributed system where you commit locally and
 sync later. But it's not so large and doesn't interfere with most daily tasks.
 Now, I work with Git at GitHub and again, the basic transition was moderately
 fast and easy. I still tend to disagree with the conclusion from
-["Mercurial vs Git; it’s all in the branches"](https://felipec.wordpress.com/2011/01/16/mercurial-vs-git-its-all-in-the-branches/)
-- Mercurial feels better adjusted for simple needs and Git feels stronger, more
+["Mercurial vs Git; it’s all in the branches"](https://felipec.wordpress.com/2011/01/16/mercurial-vs-git-its-all-in-the-branches/) -
+Mercurial feels better adjusted for simple needs and Git feels stronger, more
 powerful and harder to understand. However the general concepts of working
 directory, commits, merges and sync - are the same. Yes, advanced tasks require
 thorough understanding of specific details. But such occasions are less
@@ -143,11 +143,13 @@ gigantic gulp. Some trait can be left aside. In learning there's a good enough
 point after which it would be best to pursue with bringing value and developing
 a feature. Let's say a novice C++ programmer sees:
 
-    ifstream input("text.txt");
-    string str(
-        (istreambuf_iterator<char>(input)),
-        istreambuf_iterator<char>()
-    );
+```cpp
+ifstream input("text.txt");
+string str(
+    (istreambuf_iterator<char>(input)),
+    istreambuf_iterator<char>()
+);
+```
 
 It might be relatively simply to grok that in both statements a constructor
 function is called. But what is iterator, is there any meaning to the

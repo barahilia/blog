@@ -19,20 +19,24 @@ and explanations.
 Both in real code and in well-established libraries one can find something
 resembling:
 
-    function MyObj() {
-        this.a = 0;
-        this.count = function () {
-            this.a += 1;
-        };
+```js
+function MyObj() {
+    this.a = 0;
+    this.count = function () {
+        this.a += 1;
     };
+};
+```
 
 Let's try to use it:
 
-    var wrong = MyObj(); // forgot new... happens
-    var o = new MyObj(); // all right
-    o.count();           // works properly
-    var b = o.count;     // frequent, e.g. to register as a callback
-    b();                 // does not work: this.a is undefined
+```js
+var wrong = MyObj(); // forgot new... happens
+var o = new MyObj(); // all right
+o.count();           // works properly
+var b = o.count;     // frequent, e.g. to register as a callback
+b();                 // does not work: this.a is undefined
+```
 
 It's well known and trivial to some, that `count()` function works at the scope
 of `MyObj` only and it can't be copied or sent as a parameter. If you do such a
@@ -73,18 +77,22 @@ runtime can point to anything.
 
 If you need just to create an object, prefer the simplest syntax:
 
-    var obj = {};
-    obj.a = 0;
-    obj.count = function () { obj.a++; }
+```js
+var obj = {};
+obj.a = 0;
+obj.count = function () { obj.a++; }
+```
 
 Some textbooks and libraries define all object members within curly brackets:
 
-    var obj = {
-        a: 0,
-        count: function () {
-            obj.a++;
-        }
-    };
+```js
+var obj = {
+    a: 0,
+    count: function () {
+        obj.a++;
+    }
+};
+```
 
 I use such a syntax for the shortest definitions only. On the one hand, defining
 `count()` inside `obj` adds one level of indentation. On the other, for larger
@@ -94,13 +102,15 @@ hidden `obj =`. Both aspects harm readability so I opt to the former construct.
 
 If a constructor is needed just wrap object definition in a function:
 
-    var createObj = function () {
-        var obj = {};
-        var a = 0; // private object member
-        obj.count = function () { a++; }
-        
-        return obj;
-    };
+```js
+var createObj = function () {
+    var obj = {};
+    var a = 0; // private object member
+    obj.count = function () { a++; }
+    
+    return obj;
+};
+```
 
 Note that the overhead is just two more statements: one to declare the object
 and another to return it. Now, what do we gain:

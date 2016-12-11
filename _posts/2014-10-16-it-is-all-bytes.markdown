@@ -114,31 +114,35 @@ Internet.
 
 Let's start from a simple program:
 
-    struct data {
-        char c;
-        int i;
-    };
+```cpp
+struct data {
+    char c;
+    int i;
+};
 
-    int main() {
-        int i = 1025; // = 256*4 + 1 = \x01\x04
-        short s = 16;
-        char c = 127;
-        data d; d.c = 65; d.i = 31;
+int main() {
+    int i = 1025; // = 256*4 + 1 = \x01\x04
+    short s = 16;
+    char c = 127;
+    data d; d.c = 65; d.i = 31;
 
-        return 0;
-    }
+    return 0;
+}
+```
 
 Compile it with `g++ -g 1.cpp`, hit the debugger `gdb a.out` and execute (note,
 I added comments to each line and tags to memory output):
 
-    (gdb) break 12          // set breakpoint at return statement
-    (gdb) start             // run the program, stop at main entrance
-    (gdb) continue          // run to breakpoint
-    (gdb) print &i          // print memory address of the first variable
-    $5 = (int *) 0xbffff054
-    (gdb) x/24b 0xbffff050  // examine 24 bytes in memory starting here
-    0xbffff050:     -60   c:127    s:16-------0     i:1-------4-------0-------0
-    0xbffff058:  d.c:65    -121       4       8  d.i:31-------0-------0-------0
+```
+(gdb) break 12          // set breakpoint at return statement
+(gdb) start             // run the program, stop at main entrance
+(gdb) continue          // run to breakpoint
+(gdb) print &i          // print memory address of the first variable
+$5 = (int *) 0xbffff054
+(gdb) x/24b 0xbffff050  // examine 24 bytes in memory starting here
+0xbffff050:     -60   c:127    s:16-------0     i:1-------4-------0-------0
+0xbffff058:  d.c:65    -121       4       8  d.i:31-------0-------0-------0
+```
 
 Look, how little-endian and alignment manifest themselves in this example. The
 4-byte long integer numbers are placed at memory addresses that divide to 4
@@ -162,15 +166,17 @@ Python is closer to human kind. It has a dedicated
 [struct](https://docs.python.org/2/library/struct.html) module that packs and
 unpacks bytes. See for example:
 
-    from struct import pack, unpack
+```py
+from struct import pack, unpack
 
-    p = pack("!ih", 65, 66)         # ! = network order; i = integer; s = short
-    print repr(p)                   # string '\x00\x00\x00A\x00B'
-    open('data.dat', 'w').write(p)
+p = pack("!ih", 65, 66)         # ! = network order; i = integer; s = short
+print repr(p)                   # string '\x00\x00\x00A\x00B'
+open('data.dat', 'w').write(p)
 
-    s = open('data.dat').read()
-    t = unpack("!ih", s)
-    print t                         # (65, 66)
+s = open('data.dat').read()
+t = unpack("!ih", s)
+print t                         # (65, 66)
+```
 
 Note, that we specified the byte order - network or big-endian, so that this
 script will save in file "binary" same data on all architectures. With the same
@@ -183,12 +189,14 @@ Python 2.x also provides a `unicode` data type for Unicode strings. Given file:
 
 (note Russian letters in the middle) we may do:
 
-    s = open('text.txt').read() # incorrectly reads as ASCII / byte array
-    print repr(s)               # 'aaa \xd0\xb5\xd0\xbb\xd1\x8c bbb\n'
-    
-    import codecs               # encoder/decoder
-    u = codecs.open("text.txt", "r", "utf-8").read()
-    print repr(u)               # correct: u'aaa \u0435\u043b\u044c bbb\n'
+```py
+s = open('text.txt').read() # incorrectly reads as ASCII / byte array
+print repr(s)               # 'aaa \xd0\xb5\xd0\xbb\xd1\x8c bbb\n'
+
+import codecs               # encoder/decoder
+u = codecs.open("text.txt", "r", "utf-8").read()
+print repr(u)               # correct: u'aaa \u0435\u043b\u044c bbb\n'
+```
 
 ### C# <!-- a comment is need to present C sharp correctly -->
 
@@ -199,30 +207,34 @@ explicitly represents a Unicode character. It is 16-bit long which is enough for
 many applications. So while we're working with data, we have to tell .NET
 plainly when raw bytes should be read or written:
 
-    public static void Main()
-    {
-        int i = 65; short s = 66;
-        var bytes = Enumerable.Concat(
-            BitConverter.GetBytes(i),
-            BitConverter.GetBytes(s)
-        );        
-        File.WriteAllBytes("bytes.bin", bytes.ToArray());
-        
-        byte[] read = File.ReadAllBytes("bytes.bin");
-        Console.WriteLine(
-            "Read: int {0} and short {1}",
-            BitConverter.ToInt32(read, 0),
-            BitConverter.ToInt16(read, 4)
-        );
-    }
+```csharp
+public static void Main()
+{
+    int i = 65; short s = 66;
+    var bytes = Enumerable.Concat(
+        BitConverter.GetBytes(i),
+        BitConverter.GetBytes(s)
+    );        
+    File.WriteAllBytes("bytes.bin", bytes.ToArray());
+    
+    byte[] read = File.ReadAllBytes("bytes.bin");
+    Console.WriteLine(
+        "Read: int {0} and short {1}",
+        BitConverter.ToInt32(read, 0),
+        BitConverter.ToInt16(read, 4)
+    );
+}
+```
 
 And what will happen if a textual file is read into a string? Let's try:
 
-    public static void Main()
-    {
-        string s = File.ReadAllText("text.txt"); // same file as in Python
-        Console.WriteLine(s); // aaa угу bbb
-    }
+```csharp
+public static void Main()
+{
+    string s = File.ReadAllText("text.txt"); // same file as in Python
+    Console.WriteLine(s); // aaa угу bbb
+}
+```
 
 [`File.ReadAllText()`](http://msdn.microsoft.com/en-us/library/ms143368(v=vs.110).aspx)
 automatically detects UTF-8 encoding and loads file content correctly. C\# makes
