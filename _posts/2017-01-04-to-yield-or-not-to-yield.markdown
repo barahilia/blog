@@ -334,12 +334,14 @@ We have seen a number of points for and against using the yield statement. Here
 is a quick recap.
 
 Why to use:
+
 * reduce responsibility for data accumulation
 * define unbound sequences
 * get the ability to fail early
 * reach better performance
 
 Why not to use:
+
 * one way ticket; reusing generator gets empty sequence
 * more difficult debugging
 * no simple syntax to yield nothing (and no yield many in Python 2)
