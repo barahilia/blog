@@ -1,0 +1,308 @@
+---
+layout: post
+title:  "Spamspy"
+date:   2017-10-22 19:00:00
+categories: computers
+---
+
+## TL;DR
+
+* spamsum - fuzzy hashing algorithm - is explained
+* its properties are analyzed
+* ngram system for files' blocks indexing and search is introduced
+
+I have been busy lately with [spamspy](https://github.com/barahilia/spamspy).
+The aim was to port *spamsum* to Python, to understand it in depth,
+and to adopt it for usage with large sets of files. This post summarizes my
+findings and presents the new algorithm for indexing and search.
+
+## Fuzzy hashing
+
+[Hashes and checksums](https://en.m.wikipedia.org/wiki/List_of_hash_functions)
+are well known in computing. They process file to a short signature, confirm
+that two files are identical without comparing the content byte by byte. This
+method serves well in networking where data transfer takes time and might be
+noisy. Hashes are sensitive to minor data changes. One byte removed or one bit
+altered and voilà - the result is far off.
+
+But what if we do look forward for minor modifications? What if the task at hand is
+to find if some file originates from another after a few edits? Well there is
+[`diff`](https://en.m.wikipedia.org/wiki/Diff_utility) and related utilities
+but they are computationally demanding and require to read entire files' content
+for comparison. They also usually target textual files only.
+
+Another approach is to use hashes that changes only slightly after few edits.
+This is colloquially known as *fuzzy hashing* akin to
+[fuzzy string searching](https://en.m.wikipedia.org/wiki/Approximate_string_matching)
+that finds approximately matching strings rather than the exact match.
+Spamsum is such a hash. It was developed by Andrew Tridgell for spam emails filter.
+We are going to see how to hash a file in such manner. Once two files are
+hashed, it is relatively easy to compare those hashes: just compute
+[edit distance](https://en.m.wikipedia.org/wiki/Edit_distance)
+between them. Shorter distance means less differences between the files.
+
+## Spamsum explained
+
+So you want to know how it works. Look at a file:
+
+```
+....1..... ....2..... ....3..... ....4
+```
+
+How to hash it in a way that reflects small edits? A simple thing
+to do would be to split the file to blocks and hash each block independently. The
+final hash should be short enough so we take one character per block.
+It is also nice to have only printable characters, and
+spamsum chooses 64 of them: `A-Z, a-z, 0-9, +, /`. Same strategy and same set as in
+[Base64](https://en.m.wikipedia.org/wiki/Base64).
+
+The algorithm is simple enough: compute
+[hash function](https://www.quora.com/What-is-hashing-in-simple-terms)
+of all the bytes in the block, get a number `n` and take the character number
+`n % 64` from the list above. For example, block 1 can be mapped to `t`, 2 to
+`g`, 3 to `H`, and 4 to `k`. Hence the spamsum hash is `tgHk`.
+
+Now make a few changes:
+
+```
+x ....1..... ....2..... ....3..x.. x
+```
+
+Blocks 1 and 2 are left intact, 3 was edited and 4 disappeared. We get
+instead a new block 0 and an altered 4. Now spamsum hash might be `Qtg8s`.
+The two characters `tg` tell out loud that blocks 1 and 2 are the same
+and everything else might be different.
+
+Yes please, I was waiting for this very question: how to split file to blocks?
+Indeed from examples above this is the tricky thing. If the borders in first
+file appear at constant indexes, the the second file would be split so:
+
+```
+x ....1..... ....2..... ....3..x.. x
+          ^          ^          ^
+```
+
+Suddenly the renowned blocks 1 and 2 have different bytes and produce other hash
+characters. We want somehow to preserve block borders after edits. And here
+we come to the central idea of spamsum: same block of data must have same
+borders no matter where it appears in the file. This is possible if the content
+dictates where to split. For example, any `X` byte can separate
+between the blocks. Or it can be a pair `de`. It has the desired property
+that the same block `X........X` or `de........de` will be found in any file
+and at any location. But... no "buts", yet. Little patience.
+
+The length of the final hash is the total number of hash characters which is
+the number of blocks. Since in spamsum we want to detect minor changes it
+would be efficient for hash to be a couple of dozens characters long. Too short
+and a few edits can touch almost every block. Too long and save, search and
+compare operations become expensive. Desired number of blocks dictates another property
+for borders: their frequency in file should be a couple of dozens. Clearly specific
+strings are ruled out. Spamsum - again! - uses a hash function. At every position `i`
+we compute hash of 7 bytes `file[i-6:i] -> h`. Assuming we need blocks of size `b`,
+we place the border at every position where `h % b == (b - 1)`. Well, this doesn't
+promise exactly size `b`, but provides a practical approximation.
+
+In our examples:
+
+```
+....1..... ....2..... ....3..... ....4
+----^      ----^      ----^      ----^
+
+x ....1..... ....2..... ....3..x.. x
+  ----^      ----^      ----^
+```
+
+Pay attention, that now the block borders are at new positions.
+But they do reveal the same content between 1 and 3 in both files. That is it.
+
+## Spamsum properties
+
+### Block size and comparable files
+
+Block size defines borders so only files hashed with the same block size are
+comparable. The spamsum tool computes and is capable to compare
+hashes for the target block size and for twice that size. This covers the case
+when difference in files sizes put them to adjacent block sizes.
+
+It should be clear that changes granularity are at the block size level. Meaning
+change in one byte affects one block, two bytes - either one or two blocks.
+
+### File coverage by the hash
+
+Actual block size might be far from the target. Since borders depend on the
+context, any size from 1 byte to entire file length is possible. To keep the hash
+from overgrowing, spamsum has hard limit of 64 characters. Once 63 blocks
+were found next borders are ignored and entire tail is considered as one last block.
+This means that only the first part of the file is really hashed and those blocks
+can be matched in any position in other files.
+
+```
+.....................................
+ ^ ^     ^  ^  ^   ^    ^   ^   ^
+ 1 2 ... 63 |<-        64         ->|
+```
+
+In the same fashion, with too large actual blocks we may get not enough of them.
+If their number is below 32, spamsum reduces the target block size in the hope
+to get longer signature.
+
+```
+.....................................
+                  ^    ^   ^   ^
+                  1    2   3   4    5
+```
+
+### Edge cases
+
+The first and the last block have context-defined border from one side only
+and can be matched only there. If they are moved to the middle of the file the
+other border might not to appear where needed. This does not reduce from
+their usefulness, merely underlines the fact that real granularity of spamsum is
+higher than a single block. A few adjacent blocks should match to deduce files
+similarity.
+
+### File's part appearance in another file
+
+Take a file of size 20 KB and block size of 300 B. If the first 9 blocks are the
+same as in other file of size 100 KB we can't detect this with the default spamsum
+settings. The original tool has an option to set the block size. But in the larger
+file 300 B block size leads to about 3000 characters, where it hits the 64 hard
+limit. Original spamsum doesn't allow to change this. In the
+[Python port](https://github.com/barahilia/spamspy) hash length limit is
+configurable too and it supports this use case.
+
+### Compressed files
+
+In general spamsum is applicable to textual and binary files. Minor changes
+in few file parts leave many blocks intact and spamsum hash changes a little.
+
+*Compressed files* behave differently. Minor content changes can lead to a very
+different file. Most ZIP archives are such. A few modern file formats are
+actually "containers" based on ZIP format. For example DOCX - Microsoft Word
+documents, JAR - Java libraries, DEB - Debian install packages. All of them are
+ZIP archives of a specified structure.
+
+Such files should be decompressed before computing the spamsum hash.
+
+### No guarantees
+
+Widely used hashes like MD5 and SHA256 are very hard to revert. Meaning it is
+difficult to find any file having some specific hash. And if two files do have
+the same hash, our confidence that the files are identical is very high. Spamsum
+gives no such guarantees! Any two blocks, never mind their content or size, have
+the same hash in 1/64 cases on average. The more blocks are matched, in
+particular if they are adjacent, the greater our confidence in real data match.
+
+Similarly it should be relatively easy to "revert" the hash, namely to generate a
+file having some specific spamsum hash. This is due to the fact that border depends
+on 7 bytes only and the block hashes are independent and have only 64 possible values.
+
+## Ngram system
+
+Are you still here? Let me introduce a system based on ngrams. Imagine we have a
+large collection of files and once a new file enters the collection we want to
+check if any its significant part appears in some older file. Proper
+requirements: a collection of 1 M files, with average file size of 100 KB and
+detectable parts of 10 KB at least. The files might be: documents, books,
+programming packages. The system provides means for detection of new versions of
+existing files, some smaller files included in others, and some part of one file
+embedded in another.
+
+As we've seen above spamsum provides a ready solution. As granularity depends on
+the block size, so all the files must be hashed with the same block size. And
+the hash length should be set to the file size divided by the block size.
+Original spamsum *searches by computing edit distance* between the new hash and
+all the existing hashes. There are two drawbacks to this solution: the number of
+comparisons depends on the number of files in collection and edit distance has a
+quadratic complexity. Meaning, all the existing hashes need be retrieved and the
+comparisons get computationally heavy for larger files.
+
+I offer a different approach. This is my own work and the algorithm was
+implemented in
+[spamspy](https://github.com/barahilia/spamspy/blob/v0.1/spamspy/ngram.py).
+The idea is to get all the [ngrams](https://en.m.wikipedia.org/wiki/N-gram) from
+the spamsum hash:
+
+```python
+data = open(path).read()
+s = spamsum(data, block_size, adjusted_hash_length)
+
+# ngram of size n
+for i in range(len(s) - n + 1):
+    yield s[i: i + n]
+```
+
+At indexing, save mapping from all ngrams to the file name:
+
+```python
+for ngram in ngrams(s):
+    registry[ngram].add(path)
+```
+
+At search stage, find the file with most mappings from ngrams:
+
+```python
+c = Counter()
+
+for ngram in ngrams(s):
+    c.update(registry[ngram])
+
+best_match_path, = c.most_common(1)
+```
+
+To meet the requirements above we can choose ngram size of 5 characters, block size
+of 2 KB. Then spamsum length and number of ngrams are both about 50. So indexing of 100 GB
+requires to store `1 M * 50 * 5 B` or 250 MB of ngrams, which might become 500 MB
+together with mappings. For search we only need 50 retrievals - should be quite fast
+in a well organized storage and much faster than 1 M pairwise comparisons as in
+the previous approach.
+
+This solution also scales linearly: with reduction of detectable parts to
+1 KB spamsum hash and the number of ngrams grow to 500, storage to about 5 GB and
+search require 500 operations.
+
+The index can be saved in any relational DB and can be held in memory - e.g. in
+Redis, - even for a quite large data set. Also ngrams approach asks for
+parallelization. And the index can naturally be stored in Elasticsearch nodes.
+
+## Notes
+
+Some technical details with links to the Python implementation:
+
+* [FNV hash function](https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function)
+is used to hash blocks, though with a non-standard offset;
+[code](https://github.com/barahilia/spamspy/blob/v0.1/spamspy/spamsum.py#L43)
+* What is referred by "content hash" in this post goes by the name "rolling
+hash" in spamsum. And for a reason: instead of computing the function at the
+every point, it "rolls" the result by taking out first byte from the left and
+counting one new byte to the right. Of course not every function can be computed
+in this way.
+[Adler32-like](https://en.wikipedia.org/wiki/Adler-32) function is used;
+[code](https://github.com/barahilia/spamspy/blob/v0.1/spamspy/spamsum.py#L14)
+* The default block size is taken from the sequence `3 * 2 ^ n` - minimal number
+greater than file length divided by 64 - to adjust for the maximal length of
+spamsum hash;
+[code](https://github.com/barahilia/spamspy/blob/v0.1/spamspy/spamsum.py#L74)
+
+And an historical retrospect:
+
+* [Rsync](https://en.wikipedia.org/wiki/Rsync) was written by Andrew Tridgell
+and Paul Mackerras and released in 1996.
+* Tridgell presents and analyses the rsync algorithm in his
+[Ph.D. thesis](https://www.samba.org/~tridge/phd_thesis.pdf) in 1999. The
+main idea behind rsync is to split target file to blocks, compute hash of the
+block and another hash of the context for the block border. Cheap border hashes
+are looked at the source file and help to find duplicate blocks. Finally only
+non-duplicate parts of the source file are transferred to the target. The thesis
+discusses other applications for those ideas, but spamsum isn't mentioned.
+As well there is a section about compressed files - small edits cause
+significant changes in the archive file. I have discovered the same property of
+spamsum independently, before coming to this paper.
+* Tridgell develops spamsum, apparently circa 2002 and puts it to his
+[junkcode](https://www.samba.org/ftp/unpacked/junkcode/spamsum/) directory.
+* Spamsum is somehow discovered and finds its way into
+[ssdeep](https://ssdeep-project.github.io/ssdeep/index.html) tool by Jesse
+Kornblum in 2006.
+* In the same year Kornblum writes a paper describing spamsum and ssdeep -
+[Identifying Almost Identical Files Using Context Triggered Piecewise Hashing](https://dfrws.org/sites/default/files/session-files/paper-identifying_almost_identical_files_using_context_triggered_piecewise_hashing.pdf).
+I initially learned about fuzzy hashing from this very paper.
