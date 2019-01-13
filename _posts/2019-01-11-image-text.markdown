@@ -22,4 +22,14 @@ occasion presented itself in a hackaton about a year ago.
 
 My collegue and I split the job, with me discovering all potential areas with
 captions and labels and him, extracting those areas and passing them through
-OCR.
+OCR. How those areas can be found? I can imagine two principle approaches.
+First, in the classical way, we build up the solution. Assuming, caption is
+rectangular and has a border, some CV algorithm can be used to detect lines of
+that border, connect them back into a polyline. Another idea would be to train
+some ML model to detect promising areas. I chose the first path.
+
+After some reading, and searching, the following steps emerged:
+1. render the picture black-white
+2. detect all the borderline pixels
+3. find all the straight lines
+4. discover all the rectangles
