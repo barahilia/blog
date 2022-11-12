@@ -45,28 +45,18 @@ pair. In this case the following function will find these pairs:
 ```python
 def pairs(a, b):
    index_a = index_b = 0
-   end_a, end_b = len(a) - 1, len(b) - 1
 
-   while index_a < end_a and index_b < end_b:
-      if a[index_a] == b[index_b]:
-         pass
-
-      elif a[index_a] == b[index_b + 1]:
+   while index_a < len(a) and index_b < len(b):
+      if index_b + 1 < len(b) and a[index_a] == b[index_b + 1]:
          index_b += 1
 
-      elif a[index_a + 1] == b[index_b]:
+      elif index_a + 1 < len(a) and a[index_a + 1] == b[index_b]:
          index_a += 1
 
-      else:
-         assert False, 'too large gap'
+      assert a[index_a] == b[index_b], 'too large gap'
 
-      assert a[index_a] == b[index_b]
       yield a[index_a]
 
       index_a += 1
       index_b += 1
-
-   if index_a == end_a and index_b == end_b:
-      if a[index_a] == b[index_b]:
-         yield a[index_a]
 ```
