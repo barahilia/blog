@@ -1,0 +1,37 @@
+---
+layout: post
+title:  "Nearby sequences"
+date:   2022-11-12 12:00:00
+categories: computers
+---
+
+## The problem
+
+More than once I have met one problem under various disguises. There are a
+few sequences that are very similar one to another, with the same values. But
+occasionally, one sequence has a unique value, or, looking from the other side,
+a sequence has a gap. For example:
+```
+A: 1 - 3 - 5 - 7
+   |   |     \   \
+B: 1 - 3 - 4 - 5 - 7
+```
+Here A has a gap between 3 and 5, or B has an extra value of 4. And the task
+is, yeah, very well, you guessed right :), to pair between the matching values.
+Usually there are only two sequences, sometimes more. The matching values can
+be identical, or close one to another.
+
+The problem is known and has a name:
+[Longest common subsequence problem](https://en.wikipedia.org/wiki/Longest_common_subsequence_problem).
+There is a robust algorithm based on dynamic programming that find the match in
+O(N^2), given two sequences of similar length. But in real tasks the scene is
+lighted a bit differently:
+- the exact solution is often not really needed
+- input sequences are mostly ordered
+- there are relatively few gaps
+- linear runtime is highly preferable (at least `N*log(N)`)
+
+The bullets above brought me time and again to different approaches to this
+problem. Most recently, just a few days ago, I have implemented such function
+in my home project of detecting lines of text in a printed page photo. In this
+post I will share the algorhithms I used.
