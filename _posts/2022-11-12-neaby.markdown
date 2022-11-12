@@ -35,3 +35,38 @@ The bullets above brought me time and again to different approaches to this
 problem. Most recently, just a few days ago, I have implemented such function
 in my home project of detecting lines of text in a printed page photo. In this
 post I will share the algorhithms I used.
+
+## Solitary gap
+
+If usually there are few gaps, we can assume there is no more then one at a
+time, or that both before and after a gap in one sequence, there is a matching
+pair. In this case the following function will find these pairs:
+
+```python
+def pairs(a, b):
+   index_a = index_b = 0
+   end_a, end_b = len(a) - 1, len(b) - 1
+
+   while index_a < end_a and index_b < end_b:
+      if a[index_a] == b[index_b]:
+         pass
+
+      elif a[index_a] == b[index_b + 1]:
+         index_b += 1
+
+      elif a[index_a + 1] == b[index_b]:
+         index_a += 1
+
+      else:
+         assert False, 'too large gap'
+
+      assert a[index_a] == b[index_b]
+      yield a[index_a]
+
+      index_a += 1
+      index_b += 1
+
+   if index_a == end_a and index_b == end_b:
+      if a[index_a] == b[index_b]:
+         yield a[index_a]
+```
